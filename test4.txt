@@ -1,0 +1,9 @@
+{'id': 111111111, 'otype': 'root', 'data': bytearray(b'ROOT TABLE')}
+{'id': 100000001, 'otype': 'person', 'data': bytearray(b'Andrej')}
+{'id': 100000008, 'otype': 'link', 'data': bytearray(b'111111111:100000001')}
+{'id': 100000002, 'otype': 'person', 'data': bytearray(b'Sylvia')}
+{'id': 100000003, 'otype': 'link', 'data': bytearray(b'100000001:100000002')}
+{'id': 100000004, 'otype': 'person', 'data': bytearray(b'Bernard')}
+{'id': 100000005, 'otype': 'person', 'data': bytearray(b'Leon')}
+{'id': 100000006, 'otype': 'link', 'data': bytearray(b'100000002:100000005')}
+{'id': 100000007, 'otype': 'link', 'data': bytearray(b'100000002:100000004')}

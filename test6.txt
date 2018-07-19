@@ -1,0 +1,2 @@
+{'id': 111111111, 'otype': 'root', 'data': bytearray(b"ROOT TABLE\'), \'relationships\': {\'routes\': [], \'vectors\': [], \'objects\': [], \'collections\': [")}
+{'id': 465823620, 'otype': 'person', 'data': bytearray(b'Sylvia')}
