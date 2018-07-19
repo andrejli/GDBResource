@@ -3,7 +3,7 @@ SALT = 'KNOWN SECRET'  # TODO Include HMAC
 # TODO include Hash string calculation
 
 # DEFINE PLAINTEXT
-string = 'Andrej Licko'  # define plaintext string
+string = 'andrejli'  # define plaintext string
 str_values_list = list()  # define string value list as an empty list
 [str_values_list.append(ord(i)) for i in string]  # add integer representation of symbols to list
 print(str_values_list)  # print value list
@@ -11,7 +11,7 @@ value = 0
 
 # DEFINE PASSWORD
 # TODO Prepare password must bu same length as plaintext
-string2 = 'Andrej isiel do obchodu a teraz ide domov'  # define plaintext string
+string2 = 'andrej went to supermarket :)'  # define plaintext string
 str_values_list2 = list() # define string value list as an empty list
 [str_values_list2.append(ord(i)) for i in string2]  # add integer representation of symbols to list
 print(str_values_list2)  # print value list
