@@ -117,6 +117,19 @@ class GDBResource(object):
 
     # S I M P L E   F I N D   M E T H O D S
 
+    def full_match_id_find(self, id_code, db=None):
+        result = list()
+        if db is None:  # if db is not defined DO:
+            source = self.DBTree  # switch to default
+        else:
+            source = db  # else db is selection or other given source in memory
+        for i in source:  # loops thru database to check all records
+            # check records stored in [id]:
+            if i['id'] == id_code:  # if id is found
+                print(i["id"], '\t', i["object_type"], '\t', i["data"], '\t', i["confirmed"])  # print record to screen
+                result.append(i)  # append record to result dict
+                return result
+
     def find_id(self, id_code: int, db=None):
         """
         Method to find id code value in objects, links and ids in fulltext
@@ -407,17 +420,20 @@ class GDBResource(object):
         # hash will be stored in database with record
         return 'VOID_763654MD5'  # VOID value
 
-#     def calculate_perimeter1(self, id_code: int):
-#         result = list()  # define result as an empty list
-#         input_data = self.analyze_database_structure()  # input data are obtained from analyze database structure method
-#         exfil_list = input_data['vectors']  # exfiltrate all vectors(links) from dictionary
-#         print('EXFIL:', exfil_list)  # print list to screen
-#         for i in exfil_list:  # start looping in list
-#             for k in i:  #  start looping in vector, link values
-#                 if eval(str(k)) == id_code:  # if value changed from string to integer is equal to id
-#                     result.append(i[2])  # append vector(link) id to result list
-#         print(result)  # prints result
-#         return result  # return result list
+    def calculate_perimeter1(self, id_code: int):
+        result = list()  # define result as an empty list
+        input_data = self.analyze_database_structure()  # input data are obtained from analyze database structure method
+        exfil_list = input_data['vectors']  # exfiltrate all vectors(links) from dictionary
+        print('EXFIL:', exfil_list)  # print list to screen
+        for i in exfil_list:  # start looping all vectors in list  # TODO Sprint1
+            finded_object = self.full_match_id_find(i)
+            for k in range(0, len(finded_object)):
+                if finded_object[k]['object_id1'] == id_code:  # if value changed from string to integer is equal to id
+                    result.append(finded_object[k]['object_id2'])  # append vector(link) id to result list
+                if finded_object[k]['object_id2'] == id_code:  # if value changed from string to integer is equal to id
+                    result.append(finded_object[k]['object_id1'])  # append vector(link) id to result list
+        print(result)  # prints result
+        return result  # return result list
 #
 #
 #     def calculate_perimeter2(self, id_code: int):
@@ -501,9 +517,11 @@ if __name__ == '__main__':
     db_obj = GDBResource(filename='db.json')
     # db_obj.drop_database()
     # db_obj.print_basic_statistics()
-    # db_obj.db_object_record(object_type='person', data='GAMA', confirmed=True)
+    # db_obj.db_object_record(object_type='program', data='print("Hello")', confirmed=True)
     # db_obj.db_object_record(object_type='person', data='DELTA', confirmed=True)
     # db_obj.db_link_record(670206254, 336827551, True, data='relatives')
     [print(i) for i in db_obj.DBTree]
+    # db_obj.print_basic_statistics()
+    db_obj.calculate_perimeter1(670206254)
     # db_obj.print_basic_statistics()
     # db_obj.find_text('ALPHA')
