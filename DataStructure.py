@@ -118,6 +118,12 @@ class GDBResource(object):
     # S I M P L E   F I N D   M E T H O D S
 
     def full_match_id_find(self, id_code, db=None):
+        """
+        Finds fullmatch object with id for perimeter calculations and database internal needs
+        :param id_code: id of object in integer form
+        :param db: can override database to SELECTION or another source
+        :return: list of ID ( database doesn't accept duplicity of ids!!!)
+        """
         result = list()
         if db is None:  # if db is not defined DO:
             source = self.DBTree  # switch to default
@@ -421,11 +427,16 @@ class GDBResource(object):
         return 'VOID_763654MD5'  # VOID value
 
     def calculate_perimeter1(self, id_code: int):
+        """
+        Method finds nearest objects by looping all links
+        :param id_code: specific id number of db object
+        :return: list of linked objects in first perimeter
+        """
         result = list()  # define result as an empty list
         input_data = self.analyze_database_structure()  # input data are obtained from analyze database structure method
         exfil_list = input_data['vectors']  # exfiltrate all vectors(links) from dictionary
         print('EXFIL:', exfil_list)  # print list to screen
-        for i in exfil_list:  # start looping all vectors in list  # TODO Sprint1
+        for i in exfil_list:  # start looping all vectors in list
             finded_object = self.full_match_id_find(i)
             for k in range(0, len(finded_object)):
                 if finded_object[k]['object_id1'] == id_code:  # if value changed from string to integer is equal to id
@@ -519,7 +530,7 @@ if __name__ == '__main__':
     # db_obj.print_basic_statistics()
     # db_obj.db_object_record(object_type='program', data='print("Hello")', confirmed=True)
     # db_obj.db_object_record(object_type='person', data='DELTA', confirmed=True)
-    # db_obj.db_link_record(670206254, 336827551, True, data='relatives')
+    # db_obj.db_link_record(670206254, 559027525, True, data='author')
     [print(i) for i in db_obj.DBTree]
     # db_obj.print_basic_statistics()
     db_obj.calculate_perimeter1(670206254)
