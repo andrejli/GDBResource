@@ -2,11 +2,12 @@ import random
 import os
 import json
 import re
+import cmd
 from CONFIG import AUTOSAVE
 
 
 class GDBResource(object):
-    """ Link based graph database to store data in memory and then commit to file.
+    """ Link based graph database to store data in memory and then commit to JSON file.
         Database has objects:
             :: db_root_record - master base key for blockchain encryption mechanism
             :: db_object_record - with parameters :: object_type =(Person, Asset, Phone, Car, etc.)
@@ -445,28 +446,27 @@ class GDBResource(object):
                     result.append(finded_object[k]['object_id1'])  # append vector(link) id to result list
         print(result)  # prints result
         return result  # return result list
-#
-#
-#     def calculate_perimeter2(self, id_code: int):
-#         result = list()  # define result as an empty list
-#         input_data = self.analyze_database_structure()  # obtain input data from analyze database method
-#         exfil_list = input_data['vectors']  # define exfil list as part of input data dictionary [vectors]
-#         p1_links = self.calculate_perimeter1(id_code=id_code)  # calculate first perimeter to obtain
-#         print('PERIMETER1 LINKS',p1_links)  # first perimeter links ids
-#         print('EXFILTRATION LINKS', exfil_list)  # exfil links are still all vectors and links in database
-#         # TODO Maybe we should remove first perimeter from DB?
-#         for i in p1_links:  # loops trhu first perimeter links
-#             for k in exfil_list:  # loops thru all vectors in database
-#                 for g in range(0, len(k)):  # loops in all values of links
-#                     if eval(str(k[g])) == id_code and i == k[2]:  # if vector is found which includes perimeter2 object
-#                         res = k[g+1]  # result is next value in list
-#                         if res == k[2]:  # if value is not next but previous
-#                             res = k[g-1]  # define res as previous value in list
-#                         print('HURRAY', res)  # prints MESSAGE and perimeter2 link
-#                         result.append(res)
-#                         result.append(self.calculate_perimeter1(res))  # calculate perimeter2 links with perimeter1 method
-#         print('PERIMETER TWO :', result)  # print perimeter2 result
-#         return result  # return result list
+
+    def calculate_perimeter2(self, id_code: int):
+        result = list()  # define result as an empty list
+        input_data = self.analyze_database_structure()  # obtain input data from analyze database method
+        exfil_list = input_data['vectors']  # define exfil list as part of input data dictionary [vectors]
+        p1_links = self.calculate_perimeter1(id_code=id_code)  # calculate first perimeter to obtain
+        print('PERIMETER1 LINKS',p1_links)  # first perimeter links ids
+        print('EXFILTRATION LINKS', exfil_list)  # exfil links are still all vectors and links in database
+        # TODO Maybe we should remove first perimeter from DB?
+        # for i in p1_links:  # loops trhu first perimeter links
+        #     for k in exfil_list:  # loops thru all vectors in database
+        #         for g in range(0, len(k)):  # loops in all values of links
+        #             if eval(str(k[g])) == id_code and i == k[2]:  # if vector is found which includes perimeter2 object
+        #                 res = k[g+1]  # result is next value in list
+        #                 if res == k[2]:  # if value is not next but previous
+        #                     res = k[g-1]  # define res as previous value in list
+        #                 print('HURRAY', res)  # prints MESSAGE and perimeter2 link
+        #                 result.append(res)
+        #                 result.append(self.calculate_perimeter1(res))  # calculate perimeter2 links with perimeter1 method
+        print('PERIMETER TWO :', result)  # print perimeter2 result
+        return result  # return result list
 #
 #     # TODO Obsolete chunk of junk code - REFACTOR OR REMOVE LATER
 #     # def calculate_routes_and_vectors(self, start: bytes, exclude=None):
@@ -494,7 +494,12 @@ class GDBResource(object):
 #     #     routes.append(result)
 #     #     print(result)
 #     #     return routes
-#
+
+    # V I E W S
+
+    def view_all(self):
+        [print(i) for i in self.DBTree]
+
     # C H E C K S
 
     @staticmethod
@@ -524,6 +529,9 @@ class GDBResource(object):
         assert len(str(self.calculate_id())) == 9
 
 
+
+
+
 if __name__ == '__main__':
     db_obj = GDBResource(filename='db.json')
     # db_obj.drop_database()
@@ -531,8 +539,8 @@ if __name__ == '__main__':
     # db_obj.db_object_record(object_type='program', data='print("Hello")', confirmed=True)
     # db_obj.db_object_record(object_type='person', data='DELTA', confirmed=True)
     # db_obj.db_link_record(670206254, 559027525, True, data='author')
-    [print(i) for i in db_obj.DBTree]
+    # [print(i) for i in db_obj.DBTree]
     # db_obj.print_basic_statistics()
-    db_obj.calculate_perimeter1(670206254)
+    # db_obj.calculate_perimeter2(670206254)
     # db_obj.print_basic_statistics()
     # db_obj.find_text('ALPHA')
