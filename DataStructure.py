@@ -133,7 +133,8 @@ class GDBResource(object):
         for i in source:  # loops thru database to check all records
             # check records stored in [id]:
             if i['id'] == id_code:  # if id is found
-                print(i["id"], '\t', i["object_type"], '\t', i["data"], '\t', i["confirmed"])  # print record to screen
+                if id_code != 111111111:
+                    print(i["id"], '\t', i["object_type"], '\t', i["data"], '\t', i["confirmed"])  # print record to screen
                 result.append(i)  # append record to result dict
                 return result
 
@@ -209,59 +210,66 @@ class GDBResource(object):
         Method searches text in string format in data values of all objects and links
         :param text: string value to search for
         :param db: source to search if None - default DBTree
-        :return:
+        :return: list of finded records
         """
-        result = list()
-        if db is None:
-            source = self.DBTree
+        result = list()  # define result as an empty list
+        if db is None:  # if db is not given as parameter DO
+            source = self.DBTree  # default defined database
         else:
-            source = db
-        print('\nFOUND IN OBJECTS AND LINKS:\n')
-        for i in source:
-            search = re.search(text, i['data'])
-            if search:
-                print(i)
-                result.append(i)
-        if len(result) == 0:
-            print('NOT FOUND')
-        return result
+            source = db  # if parameter db is given use it instead default
+        print('\nFOUND IN OBJECTS AND LINKS:\n')  #
+        for i in source:  # loops in db
+            search = re.search(text, i['data'])  # search for fulltext
+            if search:  # if result exists
+                print(i)  # prints out to console
+                result.append(i)  # append to result list
+        if len(result) == 0:  # if result length is 0
+            print('NOT FOUND')  # text was not found in database
+        return result  # return list of records
 
     # S E L E C T  R E C O R D S
 
     def select_all(self):
         """ Method to select all values from DBTree and insert it into SELECTION"""
-        self.SELECTION = self.DBTree
-        print('\nSELECTION FROM DATABASE :\n')
-        [print(i) for i in self.SELECTION]
-        return self.SELECTION
+        self.SELECTION = self.DBTree  # defines SELECTION as copy of db
+        print('\nSELECTION FROM DATABASE :\n')  # prints to console
+        [print(i) for i in self.SELECTION]  # list all SELECTION to console
+        return self.SELECTION  # return SELECTION database
 
     def add_id_to_selection(self, id_code: int):
         """
         Method to select all values from DBTree and insert it into SELECTION
-        :param id_code:
+        :param id_code: (9digit integer)
         :return:
         """
-        if self.SELECTION is None:
-            self.SELECTION = list()
-        for i in self.DBTree:
-            if i['id'] == id_code:
-                self.SELECTION.append(i)
-        print('\nSELECTION FROM DATABASE :\n')
-        [print(i) for i in self.SELECTION]
+        if self.SELECTION is None:  # if SELECTION is default None DO
+            self.SELECTION = list()  # define SELECTION as an empty list
+        for i in self.DBTree:  # loops tru db
+            if i['id'] == id_code:  # if id is equal DO
+                self.SELECTION.append(i)  # append id to SELECTION
+        print('\nSELECTION FROM DATABASE :\n')  # print to console
+        [print(i) for i in self.SELECTION]  # list all objects and links in selection
         return
 
     def remove_id_from_selection(self, id_code: int):
-        if self.SELECTION is not None:
-            for i in self.SELECTION:
-                if i['id'] == id_code:
-                    self.SELECTION.remove(i)
-            print('\nSELECTION FROM DATABASE :\n')
+        """
+        Method removes id from SELECTION
+        :param id_code: 9digit integer
+        :return:
+        """
+        if self.SELECTION is not None:  # if SELECTION exists
+            for i in self.SELECTION:  # loops SELECTION
+                if i['id'] == id_code:  # if equal id is found DO
+                    self.SELECTION.remove(i)  # remove id from SELECTION
+            print('\nSELECTION FROM DATABASE :\n')  # prints to console
+            [print(i) for i in self.SELECTION]  # list all records and links from SELECTION
+
 
     def drop_selection(self):
         """ Method to drop selection of records
         :return:
         """
-        self.SELECTION = None
+        self.SELECTION = None  # defines SELECTION as None (default value)
         return
 
 
@@ -287,6 +295,14 @@ class GDBResource(object):
         os.system(command=cmd)  # execute via os.system command  # TODO Use shutil module
         return
 
+    def remove_id(self, id_code: int):
+        result = self.full_match_id_find(id_code)
+        if result is not False:
+            print('RECORD FOUND')
+            for i in self.DBTree:
+                if i['id'] == id_code:
+                    self.DBTree.remove(i)
+                    print(f'OBJECT {id_code} REMOVED FROM DATABASE')
 
     def save_all_to_json(self):
         """ Export all records in DBTree to specified file
