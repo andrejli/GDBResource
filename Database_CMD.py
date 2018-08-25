@@ -61,7 +61,7 @@ class GdbResourceConsole(cmd.Cmd):
 
     # E D I T   O B J E C T S  A N D  L I N K S
 
-    def do_eid(self, args):
+    def do_eid(self, args):  # EDIT ID
         """
         Method finds id in database loads it to result, removes id from database and
         saves new modified record to database with same id_code
@@ -109,7 +109,7 @@ class GdbResourceConsole(cmd.Cmd):
                                              reverse=reverse_boolean, confirmed=conf_boolean)  # write link to db
                 return True  # returns True
 
-    def do_rid(self, args):
+    def do_rid(self, args):  # REMOVE ID
         """
         Method finds id in database loads it to result, removes id from database and
         saves new modified record to database with same id_code
@@ -136,7 +136,7 @@ class GdbResourceConsole(cmd.Cmd):
         """
         self.database.find_id(id_code=self.parse(args)[0])  # finds id in db
 
-    def do_ft(self, args):  # FIND ID IN DATABASE
+    def do_ft(self, args):  # FIND TEXT IN DATABASE
         """
         Find text in data
         :param args:  text(string)  WITHOUT SPACE !!!
@@ -144,7 +144,7 @@ class GdbResourceConsole(cmd.Cmd):
         """
         self.database.find_text(text=self.parse_string(args)[0])  # finds text in data
 
-    def do_fot(self, args):  # FIND object type in database
+    def do_fot(self, args):  # FIND OBJECT TYPE
         """
         Find object type
         :param args:  object type(string)  WITHOUT SPACE !!!

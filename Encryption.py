@@ -10,7 +10,7 @@ print(str_values_list)  # print value list
 value = 0
 
 # DEFINE PASSWORD
-# TODO Prepare password must bu same length as plaintext
+# TODO Prepared password must bu same length as plaintext
 string2 = 'andrej went to supermarket :)'  # define plaintext string
 str_values_list2 = list() # define string value list as an empty list
 [str_values_list2.append(ord(i)) for i in string2]  # add integer representation of symbols to list
@@ -129,5 +129,5 @@ class SimpleSubstitution(object):
 
 if __name__ == '__main__':  # if this program runs as MAIN program DO:
     # No instance of whole class is needed to gain access to methods
-    encrypted = SimpleSubstitution.encrypt_simple_substitution(str_values_list,str_values_list2)
+    encrypted = SimpleSubstitution.encrypt_simple_substitution(str_values_list, str_values_list2)
     decrypted = SimpleSubstitution.decrypt_simple_substitution(encrypted, str_values_list2)

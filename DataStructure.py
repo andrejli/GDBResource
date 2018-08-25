@@ -2,6 +2,7 @@ import random
 import os
 import json
 import re
+import itertools
 import cmd
 from CONFIG import AUTOSAVE
 
@@ -449,6 +450,7 @@ class GDBResource(object):
         :param id_code: specific id number of db object
         :return: list of linked objects in first perimeter
         """
+        print(f'SEARCH FOR NEAREST LINKS AND OBJECTS FOR :{id_code}')
         result = list()  # define result as an empty list
         input_data = self.analyze_database_structure()  # input data are obtained from analyze database structure method
         exfil_list = input_data['vectors']  # exfiltrate all vectors(links) from dictionary
@@ -464,25 +466,68 @@ class GDBResource(object):
         return result  # return result list
 
     def calculate_perimeter2(self, id_code: int):
+        """
+        Method calculates second perimeter of id_code by looping
+        all objects from first perimeter
+        :param id_code:  9 digit number
+        :return: list of objects in second perimeter
+        """
         result = list()  # define result as an empty list
         input_data = self.analyze_database_structure()  # obtain input data from analyze database method
         exfil_list = input_data['vectors']  # define exfil list as part of input data dictionary [vectors]
-        p1_links = self.calculate_perimeter1(id_code=id_code)  # calculate first perimeter to obtain
-        print('PERIMETER1 LINKS',p1_links)  # first perimeter links ids
-        print('EXFILTRATION LINKS', exfil_list)  # exfil links are still all vectors and links in database
-        # TODO Maybe we should remove first perimeter from DB?
-        # for i in p1_links:  # loops trhu first perimeter links
-        #     for k in exfil_list:  # loops thru all vectors in database
-        #         for g in range(0, len(k)):  # loops in all values of links
-        #             if eval(str(k[g])) == id_code and i == k[2]:  # if vector is found which includes perimeter2 object
-        #                 res = k[g+1]  # result is next value in list
-        #                 if res == k[2]:  # if value is not next but previous
-        #                     res = k[g-1]  # define res as previous value in list
-        #                 print('HURRAY', res)  # prints MESSAGE and perimeter2 link
-        #                 result.append(res)
-        #                 result.append(self.calculate_perimeter1(res))  # calculate perimeter2 links with perimeter1 method
-        print('PERIMETER TWO :', result)  # print perimeter2 result
+        p1_objects = self.calculate_perimeter1(id_code=id_code)  # calculate first perimeter to obtain
+        print('PERIMETER1 OBJECTS', p1_objects)  # first perimeter links ids
+        # print('EXFIL ALL LINKS FROM DB', exfil_list)  # exfil links are still all vectors and links in database
+        # TODO Refactor to calculate all associated links
+        for i in p1_objects:  # loops tru first perimeter links
+            result.append(i)  # append perimeter1 object to result list
+            partial_result = self.calculate_perimeter1(i)  # calculates p1 objects to id from p1_objects
+            for k in partial_result:  # loops partial result list
+                if k != id_code:  # if id in partial result is not equal to idcode
+                    result.append(k)  # append obj to result
+        print('PERIMETER TWO OBJECTS:', result)  # print perimeter2 result
         return result  # return result list
+
+    def calculate_next_perimeters(self, id_code: int, associated_objects: list):
+        """
+        Method calculates second perimeter of id_code by create infinite loop to research
+        all associated objects in database
+        :param id_code: 9 digit number
+        :param associated_objects: list of objects to calculate next perimeters
+        :return: list of objects in second perimeter
+        """
+        # count = itertools.count(0, 1)
+        all_associated_old = set()  # defines empty set used as value from previous loop to compare
+        all_associated_obj = set()  # defines empty set used as total result of all associated obj in database
+        result = list()  # defines result as an empty list
+        flag = True  # variable flag is used as a trigger
+        input_data = self.analyze_database_structure()  # obtain input data from analyze database method
+        exfil_list = input_data['vectors']  # define exfil list as part of input data dictionary [vectors]
+        print('PERIMETER1 OBJECTS', associated_objects)  # first perimeter links ids
+        # print('EXFIL ALL LINKS FROM DB', exfil_list)  # exfil links are still all vectors and links in database
+        while flag is True:  # infinite loop with flag as trigger
+            for i in associated_objects:  # loops tru first perimeter links
+                result.append(i)  # adds object to result
+                partial_result = self.calculate_perimeter1(i)  # calculates p1 objects to id from p1_objects
+                for k in partial_result:  # loops partial result list
+                    if k != id_code:  # if id in partial result is not equal to idcode
+                        result.append(k)  # append obj to result
+            print('NEXT PERIMETER OBJECTS:', result)  # print next perimeter result
+            [all_associated_obj.add(h) for h in result]  # add all calculated obj to set representing total result
+            if all_associated_obj == all_associated_old and len(all_associated_obj) != 0:  # if there are not new
+                # objects and it is not first run in loop  #
+                [all_associated_obj.add(h) for h in result]
+                # count.__next__()
+                flag = False  # raise flag to exit loop
+                print('ALL ASSOCIATED OBJECTS IN DB', all_associated_obj)  # prints total result
+            if result:  # if result exists
+                [all_associated_obj.add(h) for h in result]
+                associated_objects = result  # sets value of associated obj as result for next loop
+                all_associated_old = all_associated_obj  # sets copy of variable to old to compare in next loop
+                result = list()  # reset result as empty list
+        # print('ALL', result)  # prints result
+        # TODO recalculate all p1 from all_associated obj to be sure
+        return all_associated_obj  # return all associated objects in db
 #
 #     # TODO Obsolete chunk of junk code - REFACTOR OR REMOVE LATER
 #     # def calculate_routes_and_vectors(self, start: bytes, exclude=None):
@@ -557,6 +602,7 @@ if __name__ == '__main__':
     # db_obj.db_link_record(670206254, 559027525, True, data='author')
     # [print(i) for i in db_obj.DBTree]
     # db_obj.print_basic_statistics()
-    # db_obj.calculate_perimeter2(670206254)
+    p1_objects = db_obj.calculate_perimeter1(336827551)
+    db_obj.calculate_next_perimeters(336827551, p1_objects)
     # db_obj.print_basic_statistics()
     # db_obj.find_text('ALPHA')
