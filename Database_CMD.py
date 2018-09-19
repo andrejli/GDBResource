@@ -160,6 +160,26 @@ class GdbResourceConsole(cmd.Cmd):
         self.database.print_basic_statistics()  # print statisstics
         self.database.view_all()  # prints all objects and links
 
+    # A D V A N C E D   F I N D   P R O C E D U R E S   A N D   M E T H O D S
+
+    def do_near(self, parameters):  # FIND NEAR OBJECTS
+        """
+        Method calculates first perimeter of asscociated object
+        :param parameters: id code -
+        :return:
+        """
+        id_code = self.parse(parameters)[0]
+        result = self.database.near_objects(id_code=id_code)
+        print('NEAREST OBJECTS : ', result)
+
+    def do_ql(self, parameters):  # ARE TWO OBJECTS LINKED ?
+        result = False
+        id1 = self.parse(parameters)[0]
+        id2 = self.parse(parameters)[1]
+        result = self.database.association(id1=id1, id2=id2)
+        print(f'OBJECTS {id1} AND {id2} ARE LINKED :', result)
+
+
     # A D M I N   C O M M A N D S
 
     def do_init(self, args):
@@ -182,6 +202,10 @@ class GdbResourceConsole(cmd.Cmd):
         """
         db_file = self.parse_string(args)[0]  # parses args as db filename
         self.database = GDBResource(filename=db_file)  # loads file to db
+
+    def do_exit(self, parameters):
+        print('DONE')
+        quit()
 
 
 if __name__ == '__main__':

@@ -3,7 +3,7 @@ SALT = 'KNOWN SECRET'  # TODO Include HMAC
 # TODO include Hash string calculation
 
 # DEFINE PLAINTEXT
-string = 'andrejli'  # define plaintext string
+string = 'Captain Nemo'  # define plaintext string
 str_values_list = list()  # define string value list as an empty list
 [str_values_list.append(ord(i)) for i in string]  # add integer representation of symbols to list
 print(str_values_list)  # print value list
@@ -11,7 +11,7 @@ value = 0
 
 # DEFINE PASSWORD
 # TODO Prepared password must bu same length as plaintext
-string2 = 'andrej went to supermarket :)'  # define plaintext string
+string2 = 'Nautilus'  # define plaintext string
 str_values_list2 = list() # define string value list as an empty list
 [str_values_list2.append(ord(i)) for i in string2]  # add integer representation of symbols to list
 print(str_values_list2)  # print value list
@@ -46,7 +46,7 @@ class SimpleSubstitution(object):
         raw_sum = list(map(lambda x, y: x + y, plaintext_values, pwd_values))
 
         # MOD RESULTS TO VALUES NOT MORE THAN 255
-        for i in range(0,len(raw_sum)):
+        for i in range(0, len(raw_sum)):
             if raw_sum[i] > 255:
                 val = raw_sum[i] - 255
                 raw_sum.pop(i)

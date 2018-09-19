@@ -2,7 +2,7 @@ import random
 import os
 import json
 import re
-import itertools
+import Encryption
 import cmd
 from CONFIG import AUTOSAVE
 
@@ -29,8 +29,8 @@ class GDBResource(object):
         :param filename: local file to store data
         """
         self.filename = filename  # define main file of database
-        self.SALT = 'KNOWN SECRET'# is used with db_root_record to obtain BASE KEY
-        self.KEY = [10, 234, 56, 67, 34, 67, 99]  # TODO Write Method to obtain KEY from ... server ???
+        self.SALT = 'Nautilus'# is used with db_root_record to obtain BASE KEY
+        self.KEY = [145, 194, 229, 232, 202, 213, 227, 147, 156, 198, 226, 227]  # TODO Write Method to obtain KEY from ... server ???
         self.DBTree = list()  # defines empty DBTree list
         self.SELECTION = None  # selection of records is initiated as None
         self.load_all_from_json()
@@ -184,7 +184,6 @@ class GDBResource(object):
             print('NOT FOUND')
         return result  # returns result dict
 
-
     def find_object_type(self, object_type: str, db=None):
         """ method finds object type and list all to screen
         :param object_type: object type(person, link, collection, report)
@@ -228,6 +227,46 @@ class GDBResource(object):
             print('NOT FOUND')  # text was not found in database
         return result  # return list of records
 
+    # A D V A N C E D   S E A R C H   W I T H   P E R I M E T E R  C A L C U L A T I O N S
+
+    def near_objects(self, id_code: int):
+        """
+        Method calculates nearest asscociated objects (not links)
+        :param id_code: 9digit id code of record in database
+        :return: list of nearest objects
+        """
+        result = self.calculate_perimeter1(id_code=id_code)
+        return result
+
+    def association(self, id1: int, id2: int):
+        """
+        Method compares perimeter calculation of id1 and id2 and returns boolean if objects are linked
+        :param id1: 9digit id code of record in database
+        :param id2: 9digit id code of record in database
+        :return:
+        """
+        i1_all_associated_objects = set()
+        i2_all_associated_objects = set()
+        i1_p1_objects = self.calculate_perimeter1(id_code=id1)
+        if len(i1_p1_objects) != 0:
+            i1_all_associated_objects = self.calculate_next_perimeters(id_code=id1, associated_objects=i1_p1_objects)
+        if len(i1_p1_objects) == 0:
+            result = False
+            return result
+        i2_p1_objects = self.calculate_perimeter1(id_code=id2)
+        if len(i2_p1_objects) != 0:
+            i2_all_associated_objects = self.calculate_next_perimeters(id_code=id2, associated_objects=i2_p1_objects)
+        if len(i2_p1_objects) == 0:
+            result = False
+            return result
+        for i in i1_all_associated_objects:
+            for k in i2_all_associated_objects:
+                if k == i:
+                    result = True
+                    return result
+        result = False
+        return result
+
     # S E L E C T  R E C O R D S
 
     def select_all(self):
@@ -265,7 +304,6 @@ class GDBResource(object):
             print('\nSELECTION FROM DATABASE :\n')  # prints to console
             [print(i) for i in self.SELECTION]  # list all records and links from SELECTION
 
-
     def drop_selection(self):
         """ Method to drop selection of records
         :return:
@@ -273,6 +311,119 @@ class GDBResource(object):
         self.SELECTION = None  # defines SELECTION as None (default value)
         return
 
+    # E N C R Y P T I O N   A N D   D E C R Y P T   D A T A
+
+    def obtain_key(self, id_code=None):
+        """
+        Method to obtain base key from Root record and decrypt with SALT
+        :return: base key (string) used for further encryption of data
+        """
+        if id_code is None:
+            id_code = 111111111
+        for i in self.DBTree:  # loops db
+            if i['id'] == id_code:  # if root record is found DO
+                root_data = i['data']  # extract data from root record
+                print(root_data)  # control print to console
+                raw_root_string = root_data[1:-1]  # # remove brackets
+                raw_root_list = raw_root_string.split(',')  # split string to list with , as separator
+                print(raw_root_list)  # control print to console
+                raw_root_ints = list()  # defines empty list
+                [raw_root_ints.append(eval(i)) for i in raw_root_list]  # change values from string to integers
+                print(raw_root_ints)  # control print to console
+
+        string2 = self.SALT  # define plaintext string
+        str_values_list2 = list()  # define string value list as an empty list
+        [str_values_list2.append(ord(i)) for i in string2]  # add integer representation of symbols to list
+        print(str_values_list2)  # print value list
+        base_key = Encryption.SimpleSubstitution.decrypt_simple_substitution(encrypted_values=raw_root_ints,
+                                                                             pwd_values=str_values_list2)
+        # decryption of two lists - salt and key from root record
+        print(base_key)  # control print to console
+        return base_key  # return base key string
+
+    def whole_db_encryption(self):  # encrypts all data fields in db records in memory
+        """
+        Method takes base key from root record and encrypt first record in database. Next record
+        will be encrypted with result of previous encryption  ONLY FOR DEMO PURPOS
+        :return:
+        """
+        # TODO Add base key to every encryption and use result of second loop encryption as key
+        base_key = self.obtain_key()  # get base key string
+        for i in self.DBTree:  # loops database
+
+            if i['id'] == 111111111:  # if record is a root record
+                continue  # forget it and go for next value
+            if i['id'] != 111111111:  # if is not root record
+                # P R E P A R E   D A T A
+                data = i['data']  # define data from record dict
+                data_values_list = list()  # define string value list as an empty list
+                [data_values_list.append(ord(i)) for i in data]  # add integer representation of symbols to list
+                print(data_values_list)  # print value list
+                # P R E P A R E   K E Y
+                key_values_list = list()  # define string value list as an empty list
+                [key_values_list.append(ord(i)) for i in base_key]  # add integer representation of symbols to list
+                print(key_values_list)  # print value list
+                # E N C R Y P T I O N
+                encrypted_values = Encryption.SimpleSubstitution.encrypt_simple_substitution(
+                    plaintext_values=data_values_list,
+                    pwd_values=key_values_list)
+                encrypted_values = encrypted_values[:len(data)]
+                next_key = self.calculate_next_key(values=encrypted_values, enc=True)
+                i['data'] = str(encrypted_values)
+                base_key = ''
+                for k in encrypted_values:
+                    base_key += chr(k)
+                print(base_key)
+                encrypted_values = list()  # reset encrypted values for loop
+        [print(i) for i in self.DBTree]
+        # TODO Save to json
+
+    def whole_db_decryption(self):  # decrypts all data fields in db records in memory
+        """
+        Method takes base key from root record and decrypt first record in database. Next record
+        will be decrypted with result of previous encryption.
+        :return:
+        """
+        # TODO Load from JSON
+        # encrypted_values = list()
+        base_key = self.obtain_key()  # get base key string
+        for i in self.DBTree:  # loops database
+            if i['id'] == 111111111:  # if record is a root record
+                continue  # forget it and go for next value
+            if i['id'] != 111111111:  # if is not root record
+                # P R E P A R E   D A T A
+                data = i['data']  # define data from record dict
+                data_values_list = list()  # define string value list as an empty list
+                data = data[1:-1]
+                data_list = data.split(',')
+                [data_values_list.append(eval(i)) for i in data_list]
+                print(data_values_list)  # print value list
+                # P R E P A R E   K E Y
+                key_values_list = list()  # define string value list as an empty list
+                [key_values_list.append(ord(i)) for i in base_key]  # add integer representation of symbols to list
+                print(key_values_list)  # print value list
+                decrypted_values = Encryption.SimpleSubstitution.decrypt_simple_substitution(
+                    encrypted_values=data_values_list, pwd_values=key_values_list)
+                next_key = self.calculate_next_key(values=decrypted_values, enc=True)
+                base_key = ''
+                for k in data_values_list:
+                    base_key += chr(k)
+                i['data'] = str(decrypted_values)
+                print(base_key)
+                decrypted_values = list()  # reset encrypted values for loop
+        [print(i) for i in self.DBTree]
+
+    def calculate_next_key(self, values: list, enc=True):
+        base_key = self.obtain_key()
+        # P R E P A R E   K E Y
+        key_values_list = list()  # define string value list as an empty list
+        [key_values_list.append(ord(i)) for i in base_key]  # add integer representation of symbols to list
+        print(key_values_list)  # print value list
+        if enc is True:
+            # ENCRYPTION
+            next_key = Encryption.SimpleSubstitution.encrypt_simple_substitution(
+                plaintext_values=values, pwd_values=key_values_list)  # TODO Remove AttributeError
+        return next_key
 
     # A D M I N  P R O C E D U R E S
 
@@ -397,7 +548,8 @@ class GDBResource(object):
         # LOOP TO FIND ALL IDS IN DATA PART OF RECORD
         for i in self.DBTree:  # loops all values in DBTree
             collect_ids = re.findall(r'\d+\d+\d+\d+\d+\d+\d+\d+\d', str(i['data']))  # regex findall of 9digits numbers
-            # collect_ids = list(filter(self.check_id_len, collect_ids))  # obsolete due regex refactoring TODO Test and remove
+            # collect_ids = list(filter(self.check_id_len, collect_ids))
+            #  obsolete due regex refactoring TODO Test and remove
             collect_ids.append(i['id'])  # append id integer of record  # TODO check if not usefull in start of current loop
             if collect_ids:  # if exists DO
                 record_result.append(collect_ids)  # append to record_result list
@@ -496,6 +648,7 @@ class GDBResource(object):
         :param associated_objects: list of objects to calculate next perimeters
         :return: list of objects in second perimeter
         """
+        # TODO Doesn't work properly - doesn't find all associated links and objects
         # count = itertools.count(0, 1)
         all_associated_old = set()  # defines empty set used as value from previous loop to compare
         all_associated_obj = set()  # defines empty set used as total result of all associated obj in database
@@ -598,11 +751,15 @@ if __name__ == '__main__':
     # db_obj.drop_database()
     # db_obj.print_basic_statistics()
     # db_obj.db_object_record(object_type='program', data='print("Hello")', confirmed=True)
-    # db_obj.db_object_record(object_type='person', data='DELTA', confirmed=True)
-    # db_obj.db_link_record(670206254, 559027525, True, data='author')
+    # db_obj.db_object_record(object_type='person', data='ALFA', confirmed=True)
+    # db_obj.db_link_record(475909242, 991258855, True, data='intern')
     # [print(i) for i in db_obj.DBTree]
     # db_obj.print_basic_statistics()
-    p1_objects = db_obj.calculate_perimeter1(336827551)
-    db_obj.calculate_next_perimeters(336827551, p1_objects)
+    # db_obj.obtain_base_key()
+    # db_obj.whole_db_encryption()
+    # db_obj.whole_db_decryption()
+    print(db_obj.association(336827551, 475909242))
+    # p1_objects = db_obj.calculate_perimeter1(991258855)
+    # db_obj.calculate_next_perimeters(991258855, p1_objects)
     # db_obj.print_basic_statistics()
     # db_obj.find_text('ALPHA')
