@@ -472,6 +472,8 @@ class GDBResource(object):
                 if i['id'] == id_code:
                     self.DBTree.remove(i)
                     print(f'OBJECT {id_code} REMOVED FROM DATABASE')
+                if i['id'] == 111111111:
+                    self.DBTree.remove(i)
 
     def save_all_to_json(self):
         """ Export all records in DBTree to specified file
@@ -731,6 +733,14 @@ class GDBResource(object):
 
     def view_all(self):
         [print(i) for i in self.DBTree]
+
+    def view_all_object_types(self):
+        result = set()
+        for i in self.DBTree:
+            if i['object_type'] != 'root':
+                result.add(i['object_type'])
+        return result
+
 
     # C H E C K S
 

@@ -121,6 +121,7 @@ class GdbResourceConsole(cmd.Cmd):
         print(result)  # prints to console
         if result is not False:  # if code was found proceed
             # TODO Remove also from links and vectors
+            # TODO Remove db root record because duplicity
             self.database.remove_id(id_code)  # remove id from database
             self.database.db_root_record()  # calculate new root record
             self.database.save_all_to_json()  # save all to json file
@@ -169,6 +170,10 @@ class GdbResourceConsole(cmd.Cmd):
         self.database.analyze_database_structure()  # analyse db structure
         self.database.print_basic_statistics()  # print statisstics
         self.database.view_all()  # prints all objects and links
+
+    def do_lsot(self, args):  # LIST ALL OBJECT TYPES STORED IN DB
+        all_ot = self.database.view_all_object_types()
+        [print(i) for i in all_ot]
 
     # A D V A N C E D   F I N D   P R O C E D U R E S   A N D   M E T H O D S
 
