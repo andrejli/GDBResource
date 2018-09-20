@@ -134,6 +134,9 @@ class GdbResourceConsole(cmd.Cmd):
         :param args:
         :return:
         """
+        if len(self.parse(args)) != 1:
+            print('No valid parameters given !!!')
+            return
         self.database.find_id(id_code=self.parse(args)[0])  # finds id in db
 
     def do_ft(self, args):  # FIND TEXT IN DATABASE
@@ -142,9 +145,16 @@ class GdbResourceConsole(cmd.Cmd):
         :param args:  text(string)  WITHOUT SPACE !!!
         :return:
         """
-        self.database.find_text(text=self.parse_string(args)[0])  # finds text in data
+        if len(self.parse_string(args)) != 1:
+            print('No valid parameters given !!!')
+            return
+        result = self.database.find_text(text=self.parse_string(args)[0]) # finds text in data
+        print(result)
 
     def do_fot(self, args):  # FIND OBJECT TYPE
+        if len(self.parse_string(args)) != 1:
+            print('No valid parameters given !!!')
+            return
         """
         Find object type
         :param args:  object type(string)  WITHOUT SPACE !!!
@@ -168,11 +178,28 @@ class GdbResourceConsole(cmd.Cmd):
         :param parameters: id code -
         :return:
         """
+        if len(self.parse(parameters)) != 1:
+            print('No valid parameters given !!!')
+            return
         id_code = self.parse(parameters)[0]
         result = self.database.near_objects(id_code=id_code)
         print('NEAREST OBJECTS : ', result)
+        # OBJECTS NOT FAR AWAY
+        result2 = self.database.not_far_objects(id_code=id_code)
+        for i in result:
+            result2.remove(i)
+        print(f'OBJECTS NOT FAR :{result2}')
 
     def do_ql(self, parameters):  # ARE TWO OBJECTS LINKED ?
+        """
+        Method compares all associated links of two objects. If intersection of two sets is more than 1
+        returns logical True
+        :param parameters: two id numbers from database
+        :return:  logical True or False
+        """
+        if len(self.parse(parameters)) != 2:
+            print('No valid parameters given !!!')
+            return
         result = False
         id1 = self.parse(parameters)[0]
         id2 = self.parse(parameters)[1]

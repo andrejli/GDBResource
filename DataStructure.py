@@ -135,7 +135,8 @@ class GDBResource(object):
             # check records stored in [id]:
             if i['id'] == id_code:  # if id is found
                 if id_code != 111111111:
-                    print(i["id"], '\t', i["object_type"], '\t', i["data"], '\t', i["confirmed"])  # print record to screen
+                    # print(i["id"], '\t', i["object_type"], '\t', i["data"], '\t', i["confirmed"])  # print record to screen
+                    pass
                 result.append(i)  # append record to result dict
                 return result
 
@@ -156,12 +157,13 @@ class GDBResource(object):
         else:
             source = db  # else db is selection or other given source in memory
         # SEARCHING ALL OBJECTS IN [ID] PART OF DICTIONARY
-        print('\nFOUND IN OBJECTS:\n')  # find in objects:
+        # print('\nFOUND IN OBJECTS:\n')  # find in objects:
         for i in source:  # loops thru database to check all records
             # check records stored in [id]:
             if i['id'] == id_code:  # if id is found
-                print(i["id"], '\t', i["object_type"], '\t', i["data"], '\t', i["confirmed"])  # print record to screen
+                # print(i["id"], '\t', i["object_type"], '\t', i["data"], '\t', i["confirmed"])  # print record to screen
                 result['OBJECTS'].append(i)  # append record to result dict
+                return result
 
         # SEARCHING IN LINKS [OBJECT_ID1] AND [OBJECT_ID2] PART OF DICTIONARY
         print('\nFOUND IN LINKS:\n')  # find in objects:
@@ -169,19 +171,21 @@ class GDBResource(object):
             # check records stored in [id]:
             if i['object_type'] == 'link':
                 if i['object_id1'] == id_code or i['object_id2'] == id_code:  # if id is found
-                    print(i["id"], '\t', i["object_id1"], '\t', i["object_id2"], i["data"], '\t', i["confirmed"])
+                    # print(i["id"], '\t', i["object_id1"], '\t', i["object_id2"], i["data"], '\t', i["confirmed"])
                     result['LINKS'].append(i)  # append record to result dict
+                    return result
 
         # SEARCHING IN ALL [DATA]
-        print('\nFOUND FULLTEXT LINKS:\n')  # fulltext regex search in [data] part of dictionary
+        # print('\nFOUND FULLTEXT IN DATA:\n')  # fulltext regex search in [data] part of dictionary
         for i in source:  # loops thru database to check all records
             # check links and collections stored in [data]:
             search = re.match(str(id_code), i['data'])  # regex match search in data string
             if search:  # if success DO
-                print(i)  # print record to screen
+                # print(i)  # print record to screen
                 result['OTHER'].append(i)  # append record to result list
         if len(result['OBJECTS']) == 0 and len(result['LINKS']) == 0 and len(result['OTHER']) == 0:
-            print('NOT FOUND')
+            result['OTHER'] = 'NOT FOUND'
+            # print('NOT FOUND')
         return result  # returns result dict
 
     def find_object_type(self, object_type: str, db=None):
@@ -195,14 +199,16 @@ class GDBResource(object):
             source = self.DBTree  # use default database
         else:
             source = db  # use other defined source as selection etc.
-        print('\nFOUND IN OBJECT TYPES:\n')  #
+        print('\nFOUND IN OBJECT TYPES:\n')  # TODO Move to views
+        print('ID CODE\t\tOBJECT TYPE\t\tDATA\t\tCONFIRMED\n')
         for i in source:  # loops records in source
             search = re.match(object_type, i['object_type'])  # regex match in [object_type] part of dictionary
             if search:  # if result
                 print(i["id"], '\t', i["object_type"], '\t', i["data"], '\t', i["confirmed"])  # print record to screen
                 result.append(i)  # append record to result dict
         if len(result) == 0:
-            print('NOT FOUND')
+            result.append('NOT FOUND')
+            # print('NOT FOUND')
         return result  # return result list
 
     def find_text(self, text: str, db=None):
@@ -217,14 +223,15 @@ class GDBResource(object):
             source = self.DBTree  # default defined database
         else:
             source = db  # if parameter db is given use it instead default
-        print('\nFOUND IN OBJECTS AND LINKS:\n')  #
+        # print('\nFOUND IN OBJECTS AND LINKS:\n')  #
         for i in source:  # loops in db
             search = re.search(text, i['data'])  # search for fulltext
             if search:  # if result exists
                 print(i)  # prints out to console
                 result.append(i)  # append to result list
         if len(result) == 0:  # if result length is 0
-            print('NOT FOUND')  # text was not found in database
+            result.append('NOT FOUND')
+            # print('NOT FOUND')  # text was not found in database
         return result  # return list of records
 
     # A D V A N C E D   S E A R C H   W I T H   P E R I M E T E R  C A L C U L A T I O N S
@@ -236,6 +243,15 @@ class GDBResource(object):
         :return: list of nearest objects
         """
         result = self.calculate_perimeter1(id_code=id_code)
+        return result
+
+    def not_far_objects(self, id_code: int):
+        """
+        Method calculates objects next to nearest(2links away)
+        :param id_code: 9digit id code of record in database
+        :return: list of objects not far
+        """
+        result = self.calculate_perimeter2(id_code=id_code)
         return result
 
     def association(self, id1: int, id2: int):
@@ -414,6 +430,7 @@ class GDBResource(object):
         [print(i) for i in self.DBTree]
 
     def calculate_next_key(self, values: list, enc=True):
+        next_key = list()
         base_key = self.obtain_key()
         # P R E P A R E   K E Y
         key_values_list = list()  # define string value list as an empty list
@@ -495,7 +512,7 @@ class GDBResource(object):
         finally:
             print('DONE')
             return True  # return
-#
+# TODO Refresh database command
 #     # E X P O R T   I M P O R T   C O M M A N D S
 #
 #     def export_to_json(self, file: str):
@@ -556,18 +573,19 @@ class GDBResource(object):
         # CHECK OBJECTS AND LINKS IN DBTREE
         for i in self.DBTree:
             if i['object_type'] == 'link':
-                print('VALID LINK FOUND')
+                # print('VALID LINK FOUND')
                 vectors.append(i['id'])
             if i['object_type'] == 'root':
-                print('VALID ROOT OBJECT FOUND')
+                # print('VALID ROOT OBJECT FOUND')
+                pass
             if i['object_type'] != 'link' and i['object_type'] != 'root':
-                print('VALID OBJECT FOUND')
+                # print('VALID OBJECT FOUND')
                 objects.append(i['id'])
 
         result['vectors'] = vectors  # defines part of result dict
         result['objects'] = objects  # defines part of result dict
         # result['collections'] = collections  # defines part of result dict
-        [print(result[i]) for i in ['vectors', 'objects']]
+        # [print(result[i]) for i in ['vectors', 'objects']]
         return result
 
     def print_basic_statistics(self):
@@ -602,11 +620,11 @@ class GDBResource(object):
         :param id_code: specific id number of db object
         :return: list of linked objects in first perimeter
         """
-        print(f'SEARCH FOR NEAREST LINKS AND OBJECTS FOR :{id_code}')
+        # print(f'SEARCH FOR NEAREST LINKS AND OBJECTS FOR :{id_code}')
         result = list()  # define result as an empty list
         input_data = self.analyze_database_structure()  # input data are obtained from analyze database structure method
         exfil_list = input_data['vectors']  # exfiltrate all vectors(links) from dictionary
-        print('EXFIL:', exfil_list)  # print list to screen
+        # print('EXFIL:', exfil_list)  # print list to screen
         for i in exfil_list:  # start looping all vectors in list
             finded_object = self.full_match_id_find(i)
             for k in range(0, len(finded_object)):
@@ -614,7 +632,7 @@ class GDBResource(object):
                     result.append(finded_object[k]['object_id2'])  # append vector(link) id to result list
                 if finded_object[k]['object_id2'] == id_code:  # if value changed from string to integer is equal to id
                     result.append(finded_object[k]['object_id1'])  # append vector(link) id to result list
-        print(result)  # prints result
+        # print(result)  # prints result
         return result  # return result list
 
     def calculate_perimeter2(self, id_code: int):
@@ -628,7 +646,7 @@ class GDBResource(object):
         input_data = self.analyze_database_structure()  # obtain input data from analyze database method
         exfil_list = input_data['vectors']  # define exfil list as part of input data dictionary [vectors]
         p1_objects = self.calculate_perimeter1(id_code=id_code)  # calculate first perimeter to obtain
-        print('PERIMETER1 OBJECTS', p1_objects)  # first perimeter links ids
+        # print('PERIMETER1 OBJECTS', p1_objects)  # first perimeter links ids
         # print('EXFIL ALL LINKS FROM DB', exfil_list)  # exfil links are still all vectors and links in database
         # TODO Refactor to calculate all associated links
         for i in p1_objects:  # loops tru first perimeter links
@@ -637,7 +655,7 @@ class GDBResource(object):
             for k in partial_result:  # loops partial result list
                 if k != id_code:  # if id in partial result is not equal to idcode
                     result.append(k)  # append obj to result
-        print('PERIMETER TWO OBJECTS:', result)  # print perimeter2 result
+        # print('PERIMETER TWO OBJECTS:', result)  # print perimeter2 result
         return result  # return result list
 
     def calculate_next_perimeters(self, id_code: int, associated_objects: list):
@@ -656,7 +674,7 @@ class GDBResource(object):
         flag = True  # variable flag is used as a trigger
         input_data = self.analyze_database_structure()  # obtain input data from analyze database method
         exfil_list = input_data['vectors']  # define exfil list as part of input data dictionary [vectors]
-        print('PERIMETER1 OBJECTS', associated_objects)  # first perimeter links ids
+        # print('PERIMETER1 OBJECTS', associated_objects)  # first perimeter links ids
         # print('EXFIL ALL LINKS FROM DB', exfil_list)  # exfil links are still all vectors and links in database
         while flag is True:  # infinite loop with flag as trigger
             for i in associated_objects:  # loops tru first perimeter links
@@ -665,14 +683,14 @@ class GDBResource(object):
                 for k in partial_result:  # loops partial result list
                     if k != id_code:  # if id in partial result is not equal to idcode
                         result.append(k)  # append obj to result
-            print('NEXT PERIMETER OBJECTS:', result)  # print next perimeter result
+            # print('NEXT PERIMETER OBJECTS:', result)  # print next perimeter result
             [all_associated_obj.add(h) for h in result]  # add all calculated obj to set representing total result
             if all_associated_obj == all_associated_old and len(all_associated_obj) != 0:  # if there are not new
                 # objects and it is not first run in loop  #
                 [all_associated_obj.add(h) for h in result]
                 # count.__next__()
                 flag = False  # raise flag to exit loop
-                print('ALL ASSOCIATED OBJECTS IN DB', all_associated_obj)  # prints total result
+                # print('ALL ASSOCIATED OBJECTS IN DB', all_associated_obj)  # prints total result
             if result:  # if result exists
                 [all_associated_obj.add(h) for h in result]
                 associated_objects = result  # sets value of associated obj as result for next loop
@@ -758,8 +776,9 @@ if __name__ == '__main__':
     # db_obj.obtain_base_key()
     # db_obj.whole_db_encryption()
     # db_obj.whole_db_decryption()
-    print(db_obj.association(336827551, 475909242))
+    # print(db_obj.association(336827551, 475909242))
     # p1_objects = db_obj.calculate_perimeter1(991258855)
+    # db_obj.calculate_perimeter2(991258855)
     # db_obj.calculate_next_perimeters(991258855, p1_objects)
     # db_obj.print_basic_statistics()
     # db_obj.find_text('ALPHA')

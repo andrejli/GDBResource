@@ -3,7 +3,7 @@ SALT = 'KNOWN SECRET'  # TODO Include HMAC
 # TODO include Hash string calculation
 
 # DEFINE PLAINTEXT
-string = 'Captain Nemo'  # define plaintext string
+string = 'Andrej isiel do skoly a potom sa vratil na obed 5453 553 53 543543 53543543 54354354 534543 5 5334543 4326547 75'  # define plaintext string
 str_values_list = list()  # define string value list as an empty list
 [str_values_list.append(ord(i)) for i in string]  # add integer representation of symbols to list
 print(str_values_list)  # print value list
