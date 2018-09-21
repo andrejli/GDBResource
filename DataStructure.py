@@ -73,6 +73,7 @@ class GDBResource(object):
             id_code = self.calculate_id()  # generate new id_code
             db_record['id'] = id_code  # store id in dict
         db_record['object_type'] = object_type  # store object_type in dict
+        # TODO Add field to identify person without decrypting his data in files
         db_record['data'] = data  # store data in dict
         db_record['confirmed'] = confirmed
         self.DBTree.append(db_record)  # append dict to DBTree
