@@ -10,10 +10,25 @@ class ContainerEditor(object):
 
     def __init__(self):
         self.plaintext = list()  # define text as empty variable (list of rows)
+        self.editor_message = 'You are entering Simple editor to edit and store informations in GDPResource database\n' \
+                              'for more info write :wq to quit' \
+                              '\n PRESS ENTER TO CONTINUE'
+        self.filename = str()
+        self.__help__ = 'SIMPLE EDITOR COMMANDS:\n' \
+                        ':q to quit\n' \
+                        ':wq to save and quit\n' \
+                        ':h to enter help\n'
+
+        self.flag = True
         # M A I N   L O O P
-        while True:  # infinite loop
+        os.system('clear')
+        print(self.editor_message)
+        input()
+        while self.flag is True:  # infinite loop
+            print(self.editor_message)
             self.view_text()  # view given text in console
             self.input_row()  # input new row
+        self.__repr__()
 
     def input_row(self):
         """
@@ -32,11 +47,14 @@ class ContainerEditor(object):
         :return: None
         """
         row = command  # defines row as a commnad given by input to console
-        if row == ':q':  # when command string equal this string DO:
-            quit()  # quit from editor
+        # if row == ':q':  # when command string equal this string DO:
+        #     quit()  # quit from editor
         if row == ':wq':  # when command string equal this string DO:
             self.save_all()  # saves all to file
-            quit()  # quit from editor
+            self.flag = False
+        # if row == ':h':
+        #     self.flag = False  # TODO Do it so you coudnt quit editor to see help
+        #     print(self.__help__)
 
     def view_text(self):
         """
@@ -79,11 +97,14 @@ class ContainerEditor(object):
         :return: if success returns True
         """
         text1nbytes = self.convert2bytes()  # convert text to bytes
-        filename = str(self.hash_it(text1nbytes)) + '.data'  # defines filename
-        with open(file=filename, mode='wb') as f:  # opens file in write binary mode
+        self.filename = str(self.hash_it(text1nbytes)) + '.data'  # defines filename
+        with open(file=self.filename, mode='wb') as f:  # opens file in write binary mode
             f.write(text1nbytes)  # write bytes to file
-            print('SAVED TO', filename)  #
+            print('SAVED TO', self.filename)  #
         return True
+
+    def __repr__(self):
+        return self.filename
 
 
 if __name__ == '__main__':

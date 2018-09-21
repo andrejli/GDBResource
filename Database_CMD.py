@@ -1,4 +1,5 @@
 from DataStructure import *
+import SimpleEditor
 import cmd
 
 
@@ -17,6 +18,12 @@ class GdbResourceConsole(cmd.Cmd):
         """Convert a series of zero or more numbers to an argument tuple"""
         return tuple(map(str, arg.split()))  # splits string arguments into tuple
 
+    @staticmethod
+    def enter_data():
+        record_text = SimpleEditor.ContainerEditor()
+        return record_text.__repr__()
+
+
     # A D D   N E W   O B J E C T S   A N D   L I N K S   T O   D A T A B A S E
 
     def do_nr(self, args):  # ADD NEW RECORD
@@ -29,7 +36,7 @@ class GdbResourceConsole(cmd.Cmd):
         """
         conf_boolean = False  # default value of confirmation parameter
         obj_type = input('OBJECT TYPE')  # input object type parameter
-        data = input('DATA')  # input data
+        data = self.enter_data()
         conf = input('CONFIRMATION STATE(y/n')  # input confirmation parameter
         if conf == 'y':  # if yes DO
             conf_boolean = True  # change default value to True
@@ -49,7 +56,10 @@ class GdbResourceConsole(cmd.Cmd):
         conf_boolean = False  # default value of confirmation parameter
         reverse_boolean = False  # default value of reverse parameter
         # obj_type = input('OBJECT TYPE')
-        data = input('DATA')  # input data
+        if len(self.parse_string(args)) != 2:
+            print('No valid parameters given !!!')
+            return
+        data = input('ENTER DATA')  # input data
         conf = input('CONFIRMATION STATE (y/n) :')  # input confirmation parameter
         if conf == 'y':  # if yes DO
             conf_boolean = True  # change default value to True
@@ -83,7 +93,7 @@ class GdbResourceConsole(cmd.Cmd):
             if result_dict['object_type'] != 'link':  # if result is record
                 conf_boolean = result[0]['confirmed']  # read confirmed from dictionary
                 obj_type = result[0]['object_type']  # read object type from dictionary
-                data = input('DATA')  # input new data
+                data = self.enter_data()  # input new data
                 conf = input('CONFIRMATION STATE(y/n')  # change confirmed parameter
                 if conf == 'y':  # if yes do
                     conf_boolean = True  # change default value to True
@@ -138,7 +148,8 @@ class GdbResourceConsole(cmd.Cmd):
         if len(self.parse(args)) != 1:
             print('No valid parameters given !!!')
             return
-        self.database.find_id(id_code=self.parse(args)[0])  # finds id in db
+        result = self.database.find_id(id_code=self.parse(args)[0])  # finds id in db
+        print(result)
 
     def do_ft(self, args):  # FIND TEXT IN DATABASE
         """
@@ -216,6 +227,9 @@ class GdbResourceConsole(cmd.Cmd):
 
     def do_init(self, args):
         """ Method initializes empty database in memory and save to defined .json file"""
+        if len(self.parse_string(args)) != 1:
+            print('No valid .json file name !!!')
+            return
         # TODO Require Admin Password
         if self.parse_string(args)[0] != '':  # if filename is given as argument
             self.database.filename = self.parse_string(args)[0]  # changes database name to filename
@@ -232,6 +246,9 @@ class GdbResourceConsole(cmd.Cmd):
         :param args: filename of existing database
         :return:
         """
+        if len(self.parse_string(args)) != 1:
+            print('No valid .json file name !!!')
+            return
         db_file = self.parse_string(args)[0]  # parses args as db filename
         self.database = GDBResource(filename=db_file)  # loads file to db
 

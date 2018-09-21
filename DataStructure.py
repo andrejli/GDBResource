@@ -34,7 +34,7 @@ class GDBResource(object):
         self.DBTree = list()  # defines empty DBTree list
         self.SELECTION = None  # selection of records is initiated as None
         self.load_all_from_json()
-        # TODO write method to check integrity of database -
+        self.check_root_record()
         print('DATABASE LOADED AND READY TO USE')
 
     # D A T A B A S E   O B J E C T S
@@ -44,6 +44,9 @@ class GDBResource(object):
          Defines data structure of root record and stores it to DBTree
         :return:
         """
+        for i in self.DBTree:  # loops thru DBTree
+            if i['id'] == 111111111:  # if root is found DO:
+                self.DBTree.remove(i)  # remove old root record
         db_record = dict()  # defines as an empty dictionary
         id_code = 111111111  # id code of root record is always nine ones
         db_record['id'] = id_code  # writes id to dictionary
@@ -474,6 +477,8 @@ class GDBResource(object):
                     print(f'OBJECT {id_code} REMOVED FROM DATABASE')
                 if i['id'] == 111111111:
                     self.DBTree.remove(i)
+                    self.save_all_to_json()  # TODO !!!!!
+                    # self.db_root_record()
 
     def save_all_to_json(self):
         """ Export all records in DBTree to specified file
@@ -504,7 +509,7 @@ class GDBResource(object):
         try:
             with open(file=file, mode='r') as f:  # open file as f
                 converted_dbtree = json.load(f)  # TODO Move JSON data to DBTree
-                [print(converted_dbtree['DBTree'][i]) for i in range(0, len(converted_dbtree['DBTree']))]
+                # [print(converted_dbtree['DBTree'][i]) for i in range(0, len(converted_dbtree['DBTree']))]
                 self.DBTree = list()  # removes all data and import new from json
                 for i in range(0, len(converted_dbtree['DBTree'])):
                     self.DBTree.append(converted_dbtree['DBTree'][i])
@@ -756,13 +761,25 @@ class GDBResource(object):
         if len(str(id_code)) != 9:
             return False  # if not return False
 
-    # def check_root_record(self):
-    #     for i in self.DBTree:  # loops thru record result
-    #         # ROOT RECORD DETECTION
-    #         if i['id'] == 111111111:  # checking if root record is found
-    #             print('ROOT RECORD DETECTED') # print msg
-    #             return True
-    #     print('ROOT RECORD IS MISSING')
+    def check_root_record(self):
+        counter = 0
+        for i in self.DBTree:  # loops thru record result
+            # ROOT RECORD DETECTION
+            if i['id'] == 111111111:  # checking if root record is found
+                print('ROOT RECORD DETECTED') # print msg
+                counter += 1
+        if counter == 0:
+            print('ROOT RECORD IS MISSING - NEW WILL BE CALCULATED')
+            self.db_root_record()
+        if counter != 1:
+            for i in range(0, counter-1):
+                for k in self.DBTree:
+                    if ['id'] == 111111111:
+                        self.DBTree.remove(k)
+        if counter == 1:
+            self.save_all_to_json()
+            return True
+
 
 
     # P Y T E S T
