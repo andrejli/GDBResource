@@ -2,19 +2,44 @@
 SALT = 'KNOWN SECRET'  # TODO Include HMAC
 # TODO include Hash string calculation
 
-# DEFINE PLAINTEXT
-string = 'Andrej isiel do skoly a potom sa vratil na obed 5453 553 53 543543 53543543 54354354 534543 5 5334543 4326547 75'  # define plaintext string
-str_values_list = list()  # define string value list as an empty list
-[str_values_list.append(ord(i)) for i in string]  # add integer representation of symbols to list
-print(str_values_list)  # print value list
-value = 0
 
-# DEFINE PASSWORD
-# TODO Prepared password must bu same length as plaintext
-string2 = 'Nautilus'  # define plaintext string
-str_values_list2 = list() # define string value list as an empty list
-[str_values_list2.append(ord(i)) for i in string2]  # add integer representation of symbols to list
-print(str_values_list2)  # print value list
+class EncryptionConverter(object):
+    """
+    Class converts strings of text and password to list of ASCII values and starts
+    instance of SimpleSubstitution to encrypt text with password
+    """
+
+    def __init__(self, text: str, password: str):
+        """
+        Method is main procedure of encryption process
+        :param text: plaintext to encryption string
+        :param password: password to encryption string
+        """
+        self.result = list()  # defines result class variable as an empty string
+        text_values = self.convert2values(text)  # converts text string to list of ASCII values
+        pwd_values = self.convert2values(password)  # converts password string to list of ASCII values
+        # defines result with use of classmethod from SimpleSubstitution class
+        self.result = SimpleSubstitution.encrypt_simple_substitution(plaintext_values=text_values, pwd_values=pwd_values)
+
+    @classmethod
+    def convert2values(cls, string: str):
+        """
+        Method converts string to list of ASCII values
+        :param string: str
+        :return: list of integers
+        """
+        result = list()  # define string value list as an empty list
+        [result.append(ord(i)) for i in string]  # add integer representation of symbols to list
+        print(result)  # print value list
+        value = 0
+        return result
+
+    def __repr__(self):
+        """
+        Method overrides Built-in method to represent class instance as list of values
+        :return:
+        """
+        return list(self.result)
 
 
 class SimpleSubstitution(object):
@@ -128,6 +153,6 @@ class SimpleSubstitution(object):
 
 
 if __name__ == '__main__':  # if this program runs as MAIN program DO:
-    # No instance of whole class is needed to gain access to methods
-    encrypted = SimpleSubstitution.encrypt_simple_substitution(str_values_list, str_values_list2)
-    decrypted = SimpleSubstitution.decrypt_simple_substitution(encrypted, str_values_list2)
+    encrypted = EncryptionConverter(text='Hello World', pwd='Alabama')
+    pwd = EncryptionConverter.convert2values('Alabama')
+    decrypted = SimpleSubstitution.decrypt_simple_substitution(list(encrypted.__repr__()), pwd)
