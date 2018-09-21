@@ -153,6 +153,6 @@ class SimpleSubstitution(object):
 
 
 if __name__ == '__main__':  # if this program runs as MAIN program DO:
-    encrypted = EncryptionConverter(text='Hello World', pwd='Alabama')
+    encrypted = EncryptionConverter(text='Hello World', password='Alabama')
     pwd = EncryptionConverter.convert2values('Alabama')
     decrypted = SimpleSubstitution.decrypt_simple_substitution(list(encrypted.__repr__()), pwd)
