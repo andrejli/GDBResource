@@ -9,6 +9,9 @@ class FulltextDigger(object):
      makes index of all files and their tags in memory.
      Compares each other and find equal tags in data files.
      Then transforms this findings into new links with 'alias' data.
+
+     FULLTEXT DATA WORKS ONLY WITH DECRYPTED DATA FILES.
+     ENCRYPTED DATA CAN'T BE INDEXED BY PERSON WITHOUT PERMISSION !!!
     """
     def __init__(self):
         self.final_index = dict()  # define final dictionary as empty variable
@@ -55,21 +58,9 @@ class FulltextDigger(object):
         return result
 
     def compare_data(self):
+        # TODO Make it happen :)
         pass
 
-    # def prepare_result(self, list2prepare: list):
-    #     for i in range(0, len(list2prepare)):
-    #         if list2prepare[i][0] == '<':
-    #             list2prepare[i] = list2prepare[1:]
-    #         if list2prepare[i][len(list2prepare[i])] == '>':
-    #             list2prepare[i] = list2prepare[:-1]
-    #     print(list2prepare)
-    #     return list2prepare
-
-
-
-# pop from set to fulltext search
-# re.match re.fullmatch to final result
 
 if __name__ == '__main__':
     obj = FulltextDigger()
