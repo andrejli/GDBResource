@@ -1,6 +1,6 @@
 import re
 import os
-
+from DataStructure import *
 
 class FulltextDigger(object):
     """
@@ -11,19 +11,36 @@ class FulltextDigger(object):
      Then transforms this findings into new links with 'alias' data.
 
      FULLTEXT DATA WORKS ONLY WITH DECRYPTED DATA FILES.
-     ENCRYPTED DATA CAN'T BE INDEXED BY PERSON WITHOUT PERMISSION !!!
+     ENCRYPTED DATA CAN'T BE SEARCHED BY PERSON WITHOUT PERMISSION !!!
     """
     def __init__(self):
+        # D E F I N E   C L A S S   V A R I A B L E S
         self.final_index = dict()  # define final dictionary as empty variable
-        # self.tags2find = ('#NAME', '#SURNAME', "#DOB", '#ID')
+        self.file_index = set()  # define index of files as an empty set
+        self.alias_index = list()
+        # C R E A T E   C A T A L O G   O F   D A T A   F I L E S
         self.catalog = self.catwalk()  # Walk tru all data files with os.walk
+        # M A I N   P R O C E D U R E  ==>
+        self.scrape_data_files()
+        # R E P R E S E N T   R E S U L T
+        self.represent_gathered_tags()
+        print('FIND FULLMATCH ALIASES')
+        [print(i) for i in self.alias_index]
+
+    def scrape_data_files(self):
+        """
+        Method loops tru data file catalog and pops files to fulltext search.
+        Collected tags are stored as list values to dictionary with filename
+        as key. Result of this procedure is class dictionary variable self.final_index
+        :return: None
+        """
         for r in range(0, len(self.catalog)):  # loops tru all data files
             file_value = self.catalog.pop()  # pop file from set
             print(file_value)  # control print to console
             # start method to fulltext search all decrypted files
             self.final_index[file_value] = self.fulltext_search(filename=file_value)
             self.file_index = set()  # reset value passed already to final index dictionary
-        self.represent_gathered_tags()
+        return
 
     @staticmethod
     def catwalk():
@@ -60,6 +77,7 @@ class FulltextDigger(object):
         print(self.file_index)  # control print of result stored in class variable
         return self.file_index  # obsolete but good
 
+    @staticmethod
     def parse_tag(self, tag_string: str):
         """
         Method parses tag to otype - object type AND data in string
@@ -69,22 +87,60 @@ class FulltextDigger(object):
         result = dict()
         word_list = tag_string.split(' ')
         result['otype'] = word_list[0]
-        data_string = str()
+        data_list = list()
         for i in range(1, len(word_list)):
-            data_string += word_list[i] + ' '
-        result['data'] = data_string[:-1]
+            data_list.append(word_list[i])
+        result['data'] = data_list
         return result
 
     def represent_gathered_tags(self):
-        for i in self.final_index:  # TODO make print all values
+        """
+        This method is used to visualize result of fulltext search to console.
+        Class variable self.final_index is parsed and presented in console in
+        readable form.
+        :return: None
+        """
+        for i in self.final_index:
             print(i)
             for tags in self.final_index[i]:
                 print(tags)
+                self.compare_data(filename=i, tag=tags)
+                self.compare_parsed_data(filename=i, tag=tags)
+        return
 
+    def compare_data(self, filename: str, tag: str):
+        """
+        Method takes tag from self.final_index and compares with all other
+        tags in self.final_index. If value is Equal prints out to console.
+        :param filename: filename of actual .data
+        :param tag: tag to compare with other tags
+        :return:
+        """
+        for i in self.final_index:
+            for tags in self.final_index[i]:
+                if tags == tag and i != filename:
+                    print('MATCH  ', filename, '\t', tag)
+                    self.alias_index.append([filename, tag])
+        return
 
-    def compare_data(self):
-        # TODO Make it happen :)
-        pass
+    def compare_parsed_data(self, filename: str, tag: str):
+        """
+        Method takes tag from self.final_index and compares with all other
+        tags in self.final_index. If value is Equal prints out to console.
+        :param filename: filename of actual .data
+        :param tag: tag to compare with other tags
+        :return:
+        """
+        # TAG preparation
+        tag1_words = self.parse_tag(filename, tag)
+        print(tag1_words)
+        # for i in self.final_index:
+        #     for tags in self.final_index[i]:
+        #         if tags == tag and i != filename:
+        #             print('MATCH  ', filename, '\t', tag)
+        #             self.alias_index.append([filename, tag])
+        return
+
 
 
 if __name__ == '__main__':
