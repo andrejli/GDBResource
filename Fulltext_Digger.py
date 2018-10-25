@@ -153,7 +153,7 @@ class FulltextDigger(object):
 
                     if result.__contains__(True):
                         print('SENSITIVE MATCH TRIGGERED')
-                    # TODO Add other Tags Logic
+                    # TODO Add other Tags Logic Specify
                 # compare words with map function
                 # self.alias_index.append([filename, tag])
         return
