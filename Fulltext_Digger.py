@@ -24,8 +24,8 @@ class FulltextDigger(object):
         self.scrape_data_files()
         # R E P R E S E N T   R E S U L T
         self.represent_gathered_tags()
-        print('FIND FULLMATCH ALIASES')
-        [print(i) for i in self.alias_index]
+        # print('FIND FULLMATCH ALIASES')
+        # [print(i) for i in self.alias_index]
 
     def scrape_data_files(self):
         """
@@ -104,7 +104,9 @@ class FulltextDigger(object):
             print(i)
             for tags in self.final_index[i]:
                 print(tags)
+                print("COMPARE FULLMATCH TAGS IN DATA\n")
                 self.compare_data(filename=i, tag=tags)
+                print("COMPARE PARTIAL TAGS IN DATA\n")
                 self.compare_parsed_data(filename=i, tag=tags)
         return
 
@@ -134,13 +136,27 @@ class FulltextDigger(object):
         # TAG preparation
         tag1_words = self.parse_tag(filename, tag)
         print(tag1_words)
-        # for i in self.final_index:
-        #     for tags in self.final_index[i]:
-        #         if tags == tag and i != filename:
-        #             print('MATCH  ', filename, '\t', tag)
-        #             self.alias_index.append([filename, tag])
-        return
+        for i in self.final_index:  # loops tru data files
+            for tags in self.final_index[i]:  # loops tru tags
+                tag2_words = self.parse_tag(i, tags)
+                mapped_booleans = map(lambda x, y: x == y, tag1_words["data"], tag2_words["data"])
+                result = list(mapped_booleans)
+                for l in result:
+                    if len(result) == 1:
+                        # S P E C I F Y  P H O N E  T A G
+                        if tag1_words['otype'] == "PHONE" and result[0] is True:
+                            print('PARSED TAGS MATCH', filename, tag, '\t', i, )
+                    if len(result) >= 2:
+                        # S P E C I F Y  P E R S O N   T A G
+                        if tag1_words['otype'] == "PERSON" and result[0] is True and result[1] is True:
+                            print('PARSED TAGS MATCH', filename, tag, '\t', i,)
 
+                    if result.__contains__(True):
+                        print('SENSITIVE MATCH TRIGGERED')
+                    # TODO Add other Tags Logic
+                # compare words with map function
+                # self.alias_index.append([filename, tag])
+        return
 
 
 if __name__ == '__main__':
