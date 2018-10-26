@@ -215,7 +215,7 @@ class GDBResource(object):
             # print('NOT FOUND')
         return result  # return result list
 
-    def find_text(self, text: str, db=None):
+    def find_text(self, text: str, db=None):  # TODO Refactor to search in .data files
         """
         Method searches text in string format in data values of all objects and links
         :param text: string value to search for

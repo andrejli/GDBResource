@@ -158,7 +158,7 @@ class GdbResourceConsole(cmd.Cmd):
         :return:
         """
         if len(self.parse_string(args)) != 1:
-            print('No valid parameters given !!!')
+            print('No valid parameters given !!!\n ENTER STRING TO SEARCH')
             return
         result = self.database.find_text(text=self.parse_string(args)[0]) # finds text in data
         print(result)
