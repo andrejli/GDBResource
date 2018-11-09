@@ -1,6 +1,6 @@
-=================================
-GRAPH DATABASE RESOURCE
-=================================
+==================================
+G D B R  - GRAPH DATABASE RESOURCE
+==================================
 
 
 A B O U T
@@ -26,7 +26,7 @@ In Win10 Powershell:
 
 python.exe ./Database_CMD.py
 
-Simple documentation
+Documentation
 --------------------
 Every object has unique 9digit code. Objects, links are stored in .json
 Every object has own data file with hashmd5.data
@@ -35,6 +35,15 @@ So .json file doesn't contain any useful readable data without data stored in te
 Decoded objects could be searched via fulltext search.
 Database also contains FulltextDigger which reveals all TAGS <> from decoded files and automatically finds
 aliases between objects within .data files.
+
+Predefined
+----------
+* root record = id 111111111 is object where all ids are stored. Contains also base key for database Encryption.
+* object or record = object
+* id = 9digit identification number of every object and link stored in database
+* otype = object type like person, vehicle, report or computer program
+* confirmation status = if existence of object is confirmed and verified
+
 
 Admin Commands
 ~~~~~~~~~~~~~~
