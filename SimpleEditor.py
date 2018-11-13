@@ -8,12 +8,18 @@ class ContainerEditor(object):
     more complex info to database GDPResource
     """
 
-    def __init__(self):
+    def __init__(self, file=None):
+        self.filename = str()
+        if file is None:
+            self.filename = str()
+        else:
+            self.filename = file
+            #TODO Load file content
         self.plaintext = list()  # define text as empty variable (list of rows)
         self.editor_message = 'You are entering Simple editor to edit and store informations in GDPResource database\n' \
                               'for more info write :wq to quit' \
                               '\n PRESS ENTER TO CONTINUE'
-        self.filename = str()
+
         self.__help__ = 'SIMPLE EDITOR COMMANDS:\n' \
                         ':q to quit\n' \
                         ':wq to save and quit\n' \
@@ -29,6 +35,8 @@ class ContainerEditor(object):
             self.view_text()  # view given text in console
             self.input_row()  # input new row
         self.__repr__()
+
+    # TODO Make editor load content of file
 
     def input_row(self):
         """

@@ -1,6 +1,8 @@
 from DataStructure import *
 import SimpleEditor
 import cmd
+import os
+from CONFIG import EDITOR
 
 
 class GdbResourceConsole(cmd.Cmd):
@@ -23,6 +25,19 @@ class GdbResourceConsole(cmd.Cmd):
         record_text = SimpleEditor.ContainerEditor()
         return record_text.__repr__()
 
+    def edit_in_external_editor(self, id_data: str):
+        if len(id_data) == 37:  # if data contains existing data filename
+            comd = EDITOR + ' ' + id_data
+            os.system(command=comd)
+        else:
+            self.enter_data()  # Use included simple editor
+        return
+
+    @staticmethod
+    def edit_file_in_vim(filename: str):  # TODO Aquire installed text editor
+        open_cmd = EDITOR + ' ' + filename
+        os.system(command=open_cmd)
+        return
 
     # A D D   N E W   O B J E C T S   A N D   L I N K S   T O   D A T A B A S E
 
@@ -93,7 +108,8 @@ class GdbResourceConsole(cmd.Cmd):
             if result_dict['object_type'] != 'link':  # if result is record
                 conf_boolean = result[0]['confirmed']  # read confirmed from dictionary
                 obj_type = result[0]['object_type']  # read object type from dictionary
-                data = self.enter_data()  # input new data
+                data = str(result[0]['data'])
+                self.edit_in_external_editor(id_data=data)  # input new data  # TODO Import os.system to console editor like vim
                 conf = input('CONFIRMATION STATE(y/n')  # change confirmed parameter
                 if conf == 'y':  # if yes do
                     conf_boolean = True  # change default value to True

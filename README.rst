@@ -10,9 +10,14 @@ Custom made Graph Document based Database only for other project purposes.
 Stores and loads data in .json format.
 
 
+Dependencies
+------------
+Python3.6
+git
+
 Install
 -------
-use clone github
+use https://github.com/andrejli/GDBResource.git
 
 Run database
 ------------
@@ -60,11 +65,11 @@ List commands
 
 Search Commands
 ===============
-* find id  >>>fid
+* find id  >>> fid
 * find text in data  >>> ft
 * find object type >>> fot
 * near objects ids >>> near
-* reveal boolean if two objects are linked  >>>ql
+* reveal boolean if two objects are linked together >>> ql
 
 Edit Commands
 =============

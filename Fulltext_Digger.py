@@ -24,8 +24,9 @@ class FulltextDigger(object):
         self.scrape_data_files()
         # R E P R E S E N T   R E S U L T
         self.represent_gathered_tags()
-        # print('FIND FULLMATCH ALIASES')
-        # [print(i) for i in self.alias_index]
+        print('FIND FULLMATCH ALIASES')
+        [print(i) for i in self.alias_index]
+        # TODO Auto generate aliases and add ALIAS links to DBTree
 
     def scrape_data_files(self):
         """
