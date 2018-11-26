@@ -478,6 +478,7 @@ class GDBResource(object):
                     print(f'OBJECT {id_code} REMOVED FROM DATABASE')
                 if i['id'] == 111111111:
                     self.DBTree.remove(i)
+                    self.db_root_record()
                     self.save_all_to_json()  # TODO !!!!!
                     # self.db_root_record()
 
@@ -794,19 +795,4 @@ class GDBResource(object):
 
 if __name__ == '__main__':
     db_obj = GDBResource(filename='db.json')
-    # db_obj.drop_database()
-    # db_obj.print_basic_statistics()
-    # db_obj.db_object_record(object_type='program', data='print("Hello")', confirmed=True)
-    # db_obj.db_object_record(object_type='person', data='ALFA', confirmed=True)
-    # db_obj.db_link_record(475909242, 991258855, True, data='intern')
-    # [print(i) for i in db_obj.DBTree]
-    # db_obj.print_basic_statistics()
-    # db_obj.obtain_base_key()
-    # db_obj.whole_db_encryption()
-    # db_obj.whole_db_decryption()
-    # print(db_obj.association(336827551, 475909242))
-    # p1_objects = db_obj.calculate_perimeter1(991258855)
-    # db_obj.calculate_perimeter2(991258855)
-    # db_obj.calculate_next_perimeters(991258855, p1_objects)
-    # db_obj.print_basic_statistics()
-    # db_obj.find_text('ALPHA')
+

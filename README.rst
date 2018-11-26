@@ -7,7 +7,7 @@ A B O U T
 ----------
 
 Custom made Graph Document based Database only for other project purposes.
-Stores and loads data in .json format.
+Stores and loads data in .json format and in encrypted or plaintext .data files.
 
 
 Dependencies
@@ -92,6 +92,7 @@ Not added to CMD yet!
 
 How to use SimpleEditor
 =======================
+Simple editor is only used to edit NEW record. If you are editi
 * To exit without write to .data file  >>>:q
 * To exit with write to .data file  >>>:wq
 

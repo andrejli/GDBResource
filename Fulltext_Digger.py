@@ -2,6 +2,7 @@ import re
 import os
 from DataStructure import *
 
+
 class FulltextDigger(object):
     """
     Class loops tru all data files and finds all stored tags in format:

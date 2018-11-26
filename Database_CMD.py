@@ -269,6 +269,11 @@ class GdbResourceConsole(cmd.Cmd):
         self.database = GDBResource(filename=db_file)  # loads file to db
 
     def do_exit(self, parameters):
+        """
+        Method exits database
+        :param parameters: None
+        :return: None
+        """
         print('DONE')
         quit()
 
