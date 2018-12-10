@@ -3,6 +3,7 @@ import SimpleEditor
 import cmd
 import os
 from CONFIG import EDITOR
+from Views import *
 
 
 class GdbResourceConsole(cmd.Cmd):
@@ -194,9 +195,10 @@ class GdbResourceConsole(cmd.Cmd):
         """
         List all database links and objects to console unsorted
         """
-        self.database.analyze_database_structure()  # analyse db structure
-        self.database.print_basic_statistics()  # print statisstics
-        self.database.view_all()  # prints all objects and links
+        standard_view(db=self.database.DBTree)
+        # self.database.analyze_database_structure()  # analyse db structure
+        # self.database.print_basic_statistics()  # print statisstics
+        # self.database.view_all()  # prints all objects and links
 
     def do_lsot(self, args):  # LIST ALL OBJECT TYPES STORED IN DB
         all_ot = self.database.view_all_object_types()
