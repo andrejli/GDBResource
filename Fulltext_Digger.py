@@ -160,6 +160,18 @@ class FulltextDigger(object):
                 # self.alias_index.append([filename, tag])
         return
 
+    def generate_fullmatch_aliases(self):
+        """
+        Method takes result of search and generates all links with otype alias between objects.
+        So this is second way to add links between objects in your Graph Database.
+        :return:
+        """
+        pass
+        # extract filenames
+        # find ids in dbtree
+        # construct alias
+        # add alias to database
+
 
 if __name__ == '__main__':
     obj = FulltextDigger()

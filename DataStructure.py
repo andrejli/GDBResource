@@ -3,6 +3,7 @@ import os
 import json
 import re
 import Encryption
+import redis
 import cmd
 from CONFIG import AUTOSAVE
 
@@ -32,6 +33,7 @@ class GDBResource(object):
         self.SALT = 'Nautilus'# is used with db_root_record to obtain BASE KEY
         self.KEY = [145, 194, 229, 232, 202, 213, 227, 147, 156, 198, 226, 227]  # TODO Write Method to obtain KEY from ... server ???
         self.DBTree = list()  # defines empty DBTree list
+        self.redis_db = redis.StrictRedis(host="localhost", port=6379, db=0)
         self.SELECTION = None  # selection of records is initiated as None
         self.load_all_from_json()
         self.check_root_record()
@@ -54,6 +56,10 @@ class GDBResource(object):
         db_record['relationships'] = self.analyze_database_structure()  # writes relationships to dictionary
         db_record['data'] = self.KEY  # TODO Generate or obtain 1800bytes key for encryption
         self.DBTree.append(db_record)  # append dict to DBTree
+        # A D D   T O   R E D I S   D B
+        self.redis_db.hset(id_code, 'object_type', 'root')
+        self.redis_db.hset(id_code, 'relationships', str(self.analyze_database_structure()))
+        self.redis_db.hset(id_code, 'data', str(self.KEY))
         return
 
     def db_object_record(self, object_type: str, data: str, id_code=None, confirmed=False):
@@ -84,6 +90,10 @@ class GDBResource(object):
                 self.db_root_record()  # add new root record to database with actualized data
         # INCREMENTAL SAVE WITH NEW OBJECT ADDED
         self.save_all_to_json()
+        # A D D   T O   R E D I S   D B
+        self.redis_db.hset(id_code, 'object_type', object_type)
+        self.redis_db.hset(id_code, 'data', data)
+        self.redis_db.hset(id_code, 'confirmed', str(confirmed))
         return
 
     def db_link_record(self, object1_id: int, object2_id: int, reverse=False, data=None, id_code=None, confirmed=False):
@@ -119,6 +129,13 @@ class GDBResource(object):
                 self.db_root_record()  # add new root record to database with actualized data
         # INCREMENTAL SAVE WITH NEW OBJECT ADDED
         self.save_all_to_json()
+        # A D D   T O   R E D I S   D B
+        self.redis_db.hset(id_code, 'object_type', 'link')
+        self.redis_db.hset(id_code, 'object1_id', object1_id)
+        self.redis_db.hset(id_code, 'object2_id', object2_id)
+        self.redis_db.hset(id_code, 'data', data)
+        self.redis_db.hset(id_code, 'confirmed', str(confirmed))
+        self.redis_db.hset(id_code, 'reverse', str(reverse))
         return
 
     # S I M P L E   F I N D   M E T H O D S
