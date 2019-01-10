@@ -13,7 +13,10 @@ Stores and loads data in .json format and in encrypted or plaintext .data files.
 Dependencies
 ------------
 Python3.6
+
 git
+
+redis (if you want to use redis database)
 
 Install
 -------
@@ -85,6 +88,10 @@ Not added to CMD yet!
 Encryption Commands
 ===================
 Not added to CMD yet!
+
+Views
+=====
+Bunch of standard views of database records
 
 Export Commands
 ===============

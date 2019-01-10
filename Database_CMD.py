@@ -23,10 +23,19 @@ class GdbResourceConsole(cmd.Cmd):
 
     @staticmethod
     def enter_data():
+        """
+        Method calls internal editor to enter basic data within database
+        :return:
+        """
         record_text = SimpleEditor.ContainerEditor()
         return record_text.__repr__()
 
     def edit_in_external_editor(self, id_data: str):
+        """
+        Method checks if datafile has valid length
+        :param id_data:  checks if data file exist
+        :return:
+        """
         if len(id_data) == 37:  # if data contains existing data filename
             comd = EDITOR + ' ' + id_data
             os.system(command=comd)
@@ -35,7 +44,12 @@ class GdbResourceConsole(cmd.Cmd):
         return
 
     @staticmethod
-    def edit_file_in_vim(filename: str):  # TODO Aquire installed text editor
+    def edit_file_in_vim(filename: str):
+        """
+        Method opens via os.system command external editor to edit data file
+        :param filename: filename to edit
+        :return:
+        """
         open_cmd = EDITOR + ' ' + filename
         os.system(command=open_cmd)
         return
@@ -110,7 +124,7 @@ class GdbResourceConsole(cmd.Cmd):
                 conf_boolean = result[0]['confirmed']  # read confirmed from dictionary
                 obj_type = result[0]['object_type']  # read object type from dictionary
                 data = str(result[0]['data'])
-                self.edit_in_external_editor(id_data=data)  # input new data  # TODO Import os.system to console editor like vim
+                self.edit_in_external_editor(id_data=data)  # input new data
                 conf = input('CONFIRMATION STATE(y/n')  # change confirmed parameter
                 if conf == 'y':  # if yes do
                     conf_boolean = True  # change default value to True

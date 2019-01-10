@@ -3,13 +3,13 @@ import os
 import json
 import re
 import Encryption
-import redis
-import cmd
-from CONFIG import AUTOSAVE
+# import redis
+# import cmd
+from CONFIG import AUTOSAVE, EXT_DB
 
 
 class GDBResource(object):
-    """ Link based graph database to store data in memory and then commit to JSON file.
+    """ Link based graph database to store data in memory and then commit to JSON file or redis.
         Database has objects:
             :: db_root_record - master base key for blockchain encryption mechanism
             :: db_object_record - with parameters :: object_type =(Person, Asset, Phone, Car, etc.)
@@ -33,7 +33,9 @@ class GDBResource(object):
         self.SALT = 'Nautilus'# is used with db_root_record to obtain BASE KEY
         self.KEY = [145, 194, 229, 232, 202, 213, 227, 147, 156, 198, 226, 227]  # TODO Write Method to obtain KEY from ... server ???
         self.DBTree = list()  # defines empty DBTree list
-        self.redis_db = redis.StrictRedis(host="localhost", port=6379, db=0)
+        if EXT_DB == 'redis':
+            import redis
+            self.redis_db = redis.StrictRedis(host="localhost", port=6379, db=0)
         self.SELECTION = None  # selection of records is initiated as None
         self.load_all_from_json()
         self.check_root_record()
@@ -55,11 +57,12 @@ class GDBResource(object):
         db_record['object_type'] = 'root'
         db_record['relationships'] = self.analyze_database_structure()  # writes relationships to dictionary
         db_record['data'] = self.KEY  # TODO Generate or obtain 1800bytes key for encryption
-        self.DBTree.append(db_record)  # append dict to DBTree
-        # A D D   T O   R E D I S   D B
-        self.redis_db.hset(id_code, 'object_type', 'root')
-        self.redis_db.hset(id_code, 'relationships', str(self.analyze_database_structure()))
-        self.redis_db.hset(id_code, 'data', str(self.KEY))
+        self.DBTree.append(db_record)  # append dict to DBTree ???
+        if EXT_DB == 'redis':
+            # A D D   T O   R E D I S   D B
+            self.redis_db.hset(id_code, 'object_type', 'root')
+            self.redis_db.hset(id_code, 'relationships', str(self.analyze_database_structure()))
+            self.redis_db.hset(id_code, 'data', str(self.KEY))
         return
 
     def db_object_record(self, object_type: str, data: str, id_code=None, confirmed=False):
@@ -90,10 +93,11 @@ class GDBResource(object):
                 self.db_root_record()  # add new root record to database with actualized data
         # INCREMENTAL SAVE WITH NEW OBJECT ADDED
         self.save_all_to_json()
-        # A D D   T O   R E D I S   D B
-        self.redis_db.hset(id_code, 'object_type', object_type)
-        self.redis_db.hset(id_code, 'data', data)
-        self.redis_db.hset(id_code, 'confirmed', str(confirmed))
+        if EXT_DB == 'redis':
+            # A D D   T O   R E D I S   D B
+            self.redis_db.hset(id_code, 'object_type', object_type)
+            self.redis_db.hset(id_code, 'data', data)
+            self.redis_db.hset(id_code, 'confirmed', str(confirmed))
         return
 
     def db_link_record(self, object1_id: int, object2_id: int, reverse=False, data=None, id_code=None, confirmed=False):
@@ -129,13 +133,14 @@ class GDBResource(object):
                 self.db_root_record()  # add new root record to database with actualized data
         # INCREMENTAL SAVE WITH NEW OBJECT ADDED
         self.save_all_to_json()
-        # A D D   T O   R E D I S   D B
-        self.redis_db.hset(id_code, 'object_type', 'link')
-        self.redis_db.hset(id_code, 'object1_id', object1_id)
-        self.redis_db.hset(id_code, 'object2_id', object2_id)
-        self.redis_db.hset(id_code, 'data', data)
-        self.redis_db.hset(id_code, 'confirmed', str(confirmed))
-        self.redis_db.hset(id_code, 'reverse', str(reverse))
+        if EXT_DB == 'redis':
+            # A D D   T O   R E D I S   D B
+            self.redis_db.hset(id_code, 'object_type', 'link')
+            self.redis_db.hset(id_code, 'object1_id', object1_id)
+            self.redis_db.hset(id_code, 'object2_id', object2_id)
+            self.redis_db.hset(id_code, 'data', data)
+            self.redis_db.hset(id_code, 'confirmed', str(confirmed))
+            self.redis_db.hset(id_code, 'reverse', str(reverse))
         return
 
     # S I M P L E   F I N D   M E T H O D S
@@ -725,40 +730,23 @@ class GDBResource(object):
         # print('ALL', result)  # prints result
         # TODO recalculate all p1 from all_associated obj to be sure
         return all_associated_obj  # return all associated objects in db
-#
-#     # TODO Obsolete chunk of junk code - REFACTOR OR REMOVE LATER
-#     # def calculate_routes_and_vectors(self, start: bytes, exclude=None):
-#     #     """ Method search DBTree for vectors and routes from root object but CAN NOT calculate reverse or side routes"""
-#     #     routes = list()  # define routes as an empty list
-#     #     result = list()  # define reuslt as an empty list
-#     #     search = start  # define search as passed value
-#     #     for i in self.DBTree:  # loops thru DBTree
-#     #         piece_of_data = i['data']  # defines piece of data as part of dict
-#     #         search_engine = re.match(search, piece_of_data)  # define search engine as regex match object
-#     #         if search_engine:  # if match object exist
-#     #             print('FOUND')  # prints msg
-#     #             search_engine.group()  # obsolete code
-#     #             pos = search_engine.span()  # finds span values - position in string
-#     #             # print(pos)
-#     #             result.append(piece_of_data[pos[0]:pos[1]])  # appends searched copied object
-#     #             # add link object
-#     #             # print(i['id'])
-#     #             link = bytearray(str(i['id']), encoding='utf8')  # define link as id part of dictionary
-#     #             result.append(link)
-#     #             # add second object
-#     #             result.append((piece_of_data[10:19]))  # TODO What if second object is not behind ?
-#     #             search = bytes(piece_of_data[10:19])
-#     #     result.append(b'END ROUTE')
-#     #     routes.append(result)
-#     #     print(result)
-#     #     return routes
+
 
     # V I E W S
 
     def view_all(self):
+        """
+        Method views all records in database
+        :return:
+        """
         [print(i) for i in self.DBTree]
+        return
 
     def view_all_object_types(self):
+        """
+        Method views all object types in database without Root record
+        :return:
+        """
         result = set()
         for i in self.DBTree:
             if i['object_type'] != 'root':
@@ -781,6 +769,10 @@ class GDBResource(object):
             return False  # if not return False
 
     def check_root_record(self):
+        """
+        Method tries to find Root record in database. If Root record is not present then
+        :return:
+        """
         counter = 0
         for i in self.DBTree:  # loops thru record result
             # ROOT RECORD DETECTION
@@ -799,15 +791,10 @@ class GDBResource(object):
             self.save_all_to_json()
             return True
 
-
-
     # P Y T E S T
 
     def test_id(self):
         assert len(str(self.calculate_id())) == 9
-
-
-
 
 
 if __name__ == '__main__':
