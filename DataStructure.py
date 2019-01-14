@@ -247,10 +247,8 @@ class GDBResource(object):
         :return: list of finded records
         """
         result = list()  # define result as an empty list
-        partial_result = list()
-        file2search = str()
-        file_content = ''
-        # TODO Make Fulltext search not Case sensitive
+        partial_result = list()  # define partial list as an empty list
+        file2search = str()  # define file2search as an empty string
         # TODO Show basic statistics of Search
         # TODO Filter Root and other irrelevant data fields from search
         if db is None:  # if db is not given as parameter DO
@@ -263,7 +261,9 @@ class GDBResource(object):
                 file2search = i['data']  # search for fulltext
                 with open(file=file2search, mode='r', encoding='utf8') as f:
                     file_content = f.read()
-                    partial_result = re.search(text, file_content)
+                    file_content = file_content.upper()  # Make string to upper characters
+                    text = text.upper()  # make string to upper characters
+                    partial_result = re.search(text, file_content)  # regular expression search
             except FileNotFoundError:
                 pass
             finally:
