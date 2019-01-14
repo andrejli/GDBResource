@@ -14,7 +14,6 @@ class ContainerEditor(object):
             self.filename = str()
         else:
             self.filename = file
-            #TODO Load file content
         self.plaintext = list()  # define text as empty variable (list of rows)
         self.editor_message = 'You are entering Simple editor to edit and store informations in GDPResource database\n' \
                               'for more info write :wq to quit' \
@@ -35,8 +34,6 @@ class ContainerEditor(object):
             self.view_text()  # view given text in console
             self.input_row()  # input new row
         self.__repr__()
-
-    # TODO Make editor load content of file
 
     def input_row(self):
         """
@@ -61,7 +58,7 @@ class ContainerEditor(object):
             self.save_all()  # saves all to file
             self.flag = False
         # if row == ':h':
-        #     self.flag = False  # TODO Do it so you coudnt quit editor to see help
+        #     self.flag = False
         #     print(self.__help__)
 
     def view_text(self):

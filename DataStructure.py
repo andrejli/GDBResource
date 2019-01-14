@@ -7,6 +7,8 @@ import Encryption
 # import cmd
 from CONFIG import AUTOSAVE, EXT_DB
 
+KEY = [145, 194, 229, 232, 202, 213, 227, 147, 156, 198, 226, 227]
+
 
 class GDBResource(object):
     """ Link based graph database to store data in memory and then commit to JSON file or redis.
@@ -237,7 +239,7 @@ class GDBResource(object):
             # print('NOT FOUND')
         return result  # return result list
 
-    def find_text(self, text: str, db=None):  # TODO Refactor to search in .data files
+    def find_text(self, text: str, db=None):
         """
         Method searches text in string format in data values of all objects and links
         :param text: string value to search for
@@ -245,19 +247,34 @@ class GDBResource(object):
         :return: list of finded records
         """
         result = list()  # define result as an empty list
+        partial_result = list()
+        file2search = str()
+        file_content = ''
+        # TODO Make Fulltext search not Case sensitive
+        # TODO Show basic statistics of Search
+        # TODO Filter Root and other irrelevant data fields from search
         if db is None:  # if db is not given as parameter DO
             source = self.DBTree  # default defined database
         else:
             source = db  # if parameter db is given use it instead default
         # print('\nFOUND IN OBJECTS AND LINKS:\n')  #
         for i in source:  # loops in db
-            search = re.search(text, i['data'])  # search for fulltext
-            if search:  # if result exists
-                print(i)  # prints out to console
-                result.append(i)  # append to result list
-        if len(result) == 0:  # if result length is 0
-            result.append('NOT FOUND')
-            # print('NOT FOUND')  # text was not found in database
+            try:
+                file2search = i['data']  # search for fulltext
+                with open(file=file2search, mode='r', encoding='utf8') as f:
+                    file_content = f.read()
+                    partial_result = re.search(text, file_content)
+            except FileNotFoundError:
+                pass
+            finally:
+                if partial_result:
+                    print(file2search, ' FOUND ')
+                    result.append(file2search)
+                if partial_result is None:
+                    # print(file2search, ' NOT FOUND ')
+                    pass
+                file_content = ''
+        print(result)
         return result  # return list of records
 
     # A D V A N C E D   S E A R C H   W I T H   P E R I M E T E R  C A L C U L A T I O N S
@@ -382,78 +399,6 @@ class GDBResource(object):
         # decryption of two lists - salt and key from root record
         print(base_key)  # control print to console
         return base_key  # return base key string
-
-    def whole_db_encryption(self):  # encrypts all data fields in db records in memory
-        """
-        Method takes base key from root record and encrypt first record in database. Next record
-        will be encrypted with result of previous encryption  ONLY FOR DEMO PURPOS
-        :return:
-        """
-        # TODO Add base key to every encryption and use result of second loop encryption as key
-        base_key = self.obtain_key()  # get base key string
-        for i in self.DBTree:  # loops database
-
-            if i['id'] == 111111111:  # if record is a root record
-                continue  # forget it and go for next value
-            if i['id'] != 111111111:  # if is not root record
-                # P R E P A R E   D A T A
-                data = i['data']  # define data from record dict
-                data_values_list = list()  # define string value list as an empty list
-                [data_values_list.append(ord(i)) for i in data]  # add integer representation of symbols to list
-                print(data_values_list)  # print value list
-                # P R E P A R E   K E Y
-                key_values_list = list()  # define string value list as an empty list
-                [key_values_list.append(ord(i)) for i in base_key]  # add integer representation of symbols to list
-                print(key_values_list)  # print value list
-                # E N C R Y P T I O N
-                encrypted_values = Encryption.SimpleSubstitution.encrypt_simple_substitution(
-                    plaintext_values=data_values_list,
-                    pwd_values=key_values_list)
-                encrypted_values = encrypted_values[:len(data)]
-                next_key = self.calculate_next_key(values=encrypted_values, enc=True)
-                i['data'] = str(encrypted_values)
-                base_key = ''
-                for k in encrypted_values:
-                    base_key += chr(k)
-                print(base_key)
-                encrypted_values = list()  # reset encrypted values for loop
-        [print(i) for i in self.DBTree]
-        # TODO Save to json
-
-    def whole_db_decryption(self):  # decrypts all data fields in db records in memory
-        """
-        Method takes base key from root record and decrypt first record in database. Next record
-        will be decrypted with result of previous encryption.
-        :return:
-        """
-        # TODO Load from JSON
-        # encrypted_values = list()
-        base_key = self.obtain_key()  # get base key string
-        for i in self.DBTree:  # loops database
-            if i['id'] == 111111111:  # if record is a root record
-                continue  # forget it and go for next value
-            if i['id'] != 111111111:  # if is not root record
-                # P R E P A R E   D A T A
-                data = i['data']  # define data from record dict
-                data_values_list = list()  # define string value list as an empty list
-                data = data[1:-1]
-                data_list = data.split(',')
-                [data_values_list.append(eval(i)) for i in data_list]
-                print(data_values_list)  # print value list
-                # P R E P A R E   K E Y
-                key_values_list = list()  # define string value list as an empty list
-                [key_values_list.append(ord(i)) for i in base_key]  # add integer representation of symbols to list
-                print(key_values_list)  # print value list
-                decrypted_values = Encryption.SimpleSubstitution.decrypt_simple_substitution(
-                    encrypted_values=data_values_list, pwd_values=key_values_list)
-                next_key = self.calculate_next_key(values=decrypted_values, enc=True)
-                base_key = ''
-                for k in data_values_list:
-                    base_key += chr(k)
-                i['data'] = str(decrypted_values)
-                print(base_key)
-                decrypted_values = list()  # reset encrypted values for loop
-        [print(i) for i in self.DBTree]
 
     def calculate_next_key(self, values: list, enc=True):
         next_key = list()
@@ -791,10 +736,29 @@ class GDBResource(object):
             self.save_all_to_json()
             return True
 
-    # P Y T E S T
+    # P Y T E S T   T E S T S
 
     def test_id(self):
         assert len(str(self.calculate_id())) == 9
+
+
+class DbEncryption(object):
+    """Class Encrypt and Decrypt every data file in directory with given KEY"""
+    def whole_db_encryption(self):  # encrypts all data fields in db records in memory
+        """
+        Method takes KEY value list and apply simple substitution every db data file
+        So links between objects and idcodes stays revealed but data in files is encrypted
+        :return:
+        """
+        pass
+
+    def whole_db_decryption(self):  # decrypts all data fields in db records in memory
+        """
+        Method takes KEY value list and apply simple substitution every db data file
+        So links between objects and idcodes stays revealed but data in files is encrypted
+        :return:
+        """
+        pass
 
 
 if __name__ == '__main__':
