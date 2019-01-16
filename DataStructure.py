@@ -249,6 +249,7 @@ class GDBResource(object):
         result = list()  # define result as an empty list
         partial_result = list()  # define partial list as an empty list
         file2search = str()  # define file2search as an empty string
+        # TODO Make Fulltext search for Multiple Words
         # TODO Show basic statistics of Search
         # TODO Filter Root and other irrelevant data fields from search
         if db is None:  # if db is not given as parameter DO
