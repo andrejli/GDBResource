@@ -216,6 +216,29 @@ class GDBResource(object):
             # print('NOT FOUND')
         return result  # returns result dict
 
+    def find_id_links(self, id_code: int, db=None):
+        """
+        Method finds all links with given id_code of record. This method purpose is
+        to remove all links with removed id from database
+        :param id_code: 9digit int representing record or link in database
+        :param db: default set to None. If any parameter is not given default
+        :return: list of links to remove or manipulate
+        """
+        result = list()
+        if db is None:  # if db is not defined DO:
+            source = self.DBTree  # switch to default
+        else:
+            source = db  # else db is selection or other given source in memory
+        # SEARCHING IN LINKS [OBJECT_ID1] AND [OBJECT_ID2] PART OF DICTIONARY
+        print('\nFOUND IN LINKS:\n')  # find in objects:
+        for i in source:  # loops thru database to check all records
+            # check records stored in [id]:
+            if i['object_type'] == 'link':
+                if i['object_id1'] == id_code or i['object_id2'] == id_code:  # if id is found
+                    # print(i["id"], '\t', i["object_id1"], '\t', i["object_id2"], i["data"], '\t', i["confirmed"])
+                    result.append(i)  # append record to result dict
+                    return result
+
     def find_object_type(self, object_type: str, db=None):
         """ method finds object type and list all to screen
         :param object_type: object type(person, link, collection, report)

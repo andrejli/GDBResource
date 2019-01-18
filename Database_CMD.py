@@ -99,6 +99,12 @@ class GdbResourceConsole(cmd.Cmd):
         self.database.db_link_record(object1_id=self.parse(args)[0], object2_id=self.parse(args)[1], data=data,
                                      reverse=reverse_boolean, confirmed=conf_boolean)  # write link to database
 
+    # S E L E C T I O N   C O M M A N D S
+
+    # TODO Add records to SELECTION
+    # TODO Remove record from SELECTION
+    # TODO Export SELECTION to .json
+
     # E D I T   O B J E C T S  A N D  L I N K S
 
     def do_eid(self, args):  # EDIT ID
@@ -117,6 +123,8 @@ class GdbResourceConsole(cmd.Cmd):
         id_code = self.parse(args)[0]  # parse id_code from args
         result = self.database.full_match_id_find(id_code=id_code)  # finds id code in db
         print(result)  # print result to console
+        if result is None:
+            return False
         result_dict = result[0]  # extract dictionary from list
         self.database.remove_id(id_code)  # remove id from db
         if result is not False:  # if result exists DO
@@ -159,14 +167,23 @@ class GdbResourceConsole(cmd.Cmd):
         """
         id_code = self.parse(args)[0]  # parses id code from arguments
         result = self.database.full_match_id_find(id_code=id_code)  # finds id and loads to list NO DUPLICITY
-        print(result)  # prints to console
+        print('FULLMATCH', result)  # prints to console
         if result is not False:  # if code was found proceed
-            # TODO Remove also from links and vectors
-            # TODO Remove db root record because duplicity
+            # Remove associated links and vectors
+            links2remove = list()  # define variable as an empty list
+            all_links = self.database.find_object_type(object_type='link')  # find all links in db
+            print(all_links)  # prints list with links dictionaries
+            for i in all_links:  # loop tru all links
+                if id_code == i['object_id1'] or id_code == i['object_id2']:  # compare if id code is present in the link
+                    print('LINK TO REMOVE', i['id'])  # control print to console
+                    links2remove.append(i['id'])  # add link to list of links to remove from db
+                else:
+                    pass
+            print(links2remove)  # prints out to console all links to remove
+            [self.database.remove_id(i) for i in links2remove]  # comprehension to remove all associated links
             self.database.remove_id(id_code)  # remove id from database
             self.database.db_root_record()  # calculate new root record
             self.database.save_all_to_json()  # save all to json file
-
 
     #  F I N D  O B J E C T S  A N D  L I N K S
 
@@ -195,14 +212,13 @@ class GdbResourceConsole(cmd.Cmd):
         print(result)
 
     def do_fot(self, args):  # FIND OBJECT TYPE
+        """Find object type
+            :param args:  object type(string)  WITHOUT SPACE !!!
+            :return:
+                """
         if len(self.parse_string(args)) != 1:
             print('No valid parameters given !!!')
             return
-        """
-        Find object type
-        :param args:  object type(string)  WITHOUT SPACE !!!
-        :return:
-        """
         self.database.find_object_type(object_type=self.parse_string(args)[0])  # finds object type in db
 
     def do_lsdb(self, args):  # LIST ALL DATABASE RECORDS AND LINKS UNSORTED
@@ -271,6 +287,7 @@ class GdbResourceConsole(cmd.Cmd):
         """ Method drops(remove) all records and links"""
         # TODO Require Admin Password
         self.database.drop_database()  # drop all records and links
+        # TODO Remove also data files !!!
 
     def do_switch(self, args):
         """
@@ -284,6 +301,9 @@ class GdbResourceConsole(cmd.Cmd):
         db_file = self.parse_string(args)[0]  # parses args as db filename
         self.database = GDBResource(filename=db_file)  # loads file to db
 
+        # TODO Sync primary db with db server (Redis)
+
+    @staticmethod
     def do_exit(self, parameters):
         """
         Method exits database
