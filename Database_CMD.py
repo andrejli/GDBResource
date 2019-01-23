@@ -208,6 +208,7 @@ class GdbResourceConsole(cmd.Cmd):
         if len(self.parse_string(args)) != 1:
             print('No valid parameters given !!!\n ENTER STRING TO SEARCH')
             return
+        # TODO Modify to accept multiword args
         result = self.database.find_text(text=self.parse_string(args)[0])  # finds text in data
         print(result)
 

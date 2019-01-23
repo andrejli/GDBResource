@@ -58,8 +58,8 @@ class GDBResource(object):
         db_record['id'] = id_code  # writes id to dictionary
         db_record['object_type'] = 'root'
         db_record['relationships'] = self.analyze_database_structure()  # writes relationships to dictionary
-        db_record['data'] = self.KEY  # TODO Generate or obtain 1800bytes key for encryption
-        self.DBTree.append(db_record)  # append dict to DBTree ???
+        db_record['data'] = self.KEY
+        self.DBTree.append(db_record)  # append dict to DBTree
         if EXT_DB == 'redis':
             # A D D   T O   R E D I S   D B
             self.redis_db.hset(id_code, 'object_type', 'root')
@@ -71,7 +71,7 @@ class GDBResource(object):
         """
         Method defines data structure of record, adds record to DBTree
         and update root object
-        :param object_type: person, asset, report, # TODO Add collections
+        :param object_type: person, asset, report
         :param data: text string describe object
         :param id_code: unique random value integer stored between 100000000 and 999999999
         :param confirmed: Boolean value of confirmation
@@ -84,7 +84,6 @@ class GDBResource(object):
             id_code = self.calculate_id()  # generate new id_code
             db_record['id'] = id_code  # store id in dict
         db_record['object_type'] = object_type  # store object_type in dict
-        # TODO Add field to identify person without decrypting his data in files
         db_record['data'] = data  # store data in dict
         db_record['confirmed'] = confirmed
         self.DBTree.append(db_record)  # append dict to DBTree
@@ -272,7 +271,6 @@ class GDBResource(object):
         result = list()  # define result as an empty list
         partial_result = list()  # define partial list as an empty list
         file2search = str()  # define file2search as an empty string
-        # TODO Make Fulltext search for Multiple Words
         # TODO Show basic statistics of Search
         # TODO Filter Root and other irrelevant data fields from search
         if db is None:  # if db is not given as parameter DO
@@ -300,6 +298,56 @@ class GDBResource(object):
                 file_content = ''
         print(result)
         return result  # return list of records
+
+    @staticmethod
+    def fulltext_multiword_search(text, find):
+        """
+        Function takes text, removes special characters and split into bag
+        of words. Then splits multiword to search also to list. splits it
+        and try to find in bag. If success returns True
+        :param text: string
+        :param find: multiword string
+        :return: Boolean value or None
+        """
+        # remove special characters
+        special_chars = '.!@#$%^&*():"{}[]_-=+/<>'  # define special characters
+        for i in special_chars:  # loops tru special characters
+            text = text.replace(i, '')  # remove special character from text
+        print(text)  # prints to console
+
+        # split text to list of words
+        bag = text.split(sep=' ')  # splits text to list of words
+        print(bag)  # prints list to console
+
+        # get number of words to find in words
+        list_of_words_in_find = find.split(sep=' ')  # splits find to list
+        num_of_words = len(list_of_words_in_find)  # get number of words in multiword
+
+        try:
+            for i in range(0, len(bag)):  # loops tru bag
+                # construct constructed string to search
+                constructed_string = bag[i] + ' '  # define constructed string as word plus SPACE
+                for k in range(1, num_of_words):  # loops to add same number of words as find has
+                    constructed_string += bag[i + k] + ' '  # adds next word and SPACE
+                constructed_string = constructed_string[0:-1]  # final result must be modified by removing last SPACE
+                print(constructed_string)  # prints to console
+                if constructed_string == find:  # if find string is same as constructed string
+                    print('GOTCHA')  # print SUCCESS to console
+                    return True  # return True - find was found in text
+                # print(i, constructed_string)
+        except IndexError:  # if IndexError raises ... find is not in text return False
+            print('DONE')
+            return False
+        finally:
+            pass
+
+    # P Y T E S T   T E S T S
+
+    def test_fulltext(self):
+        assert self.fulltext_multiword_search('Analyza dokazala hovno!', 'Peter') is None
+        assert self.fulltext_multiword_search('Analyza dokazala hovno!', 'Analyza') == True
+        assert self.fulltext_multiword_search('Analyza dokazala hovno!', 'dokazala') == True
+        assert self.fulltext_multiword_search('Analyza dokazala hovno!', 'hovno') == True
 
     # A D V A N C E D   S E A R C H   W I T H   P E R I M E T E R  C A L C U L A T I O N S
 
