@@ -183,7 +183,7 @@ class GdbResourceConsole(cmd.Cmd):
             [self.database.remove_id(i) for i in links2remove]  # comprehension to remove all associated links
             self.database.remove_id(id_code)  # remove id from database
             self.database.db_root_record()  # calculate new root record
-            self.database.save_all_to_json()  # save all to json file
+            self.database.save_all_to_json(file=self.database.filename)  # save all to json file
 
     #  F I N D  O B J E C T S  A N D  L I N K S
 
@@ -240,7 +240,7 @@ class GdbResourceConsole(cmd.Cmd):
     def do_near(self, parameters):  # FIND NEAR OBJECTS
         """
         Method calculates first perimeter of asscociated object
-        :param parameters: id code -
+        :param parameters: id code - 9digit decimal number
         :return:
         """
         if len(self.parse(parameters)) != 1:

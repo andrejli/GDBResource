@@ -1,0 +1,21 @@
+{
+    "DBTree": [
+        {
+            "confirmed": true,
+            "data": "some.data",
+            "id": 781513433,
+            "object_type": "report"
+        },
+        {
+            "data": "[145, 194, 229, 232, 202, 213, 227, 147, 156, 198, 226, 227]",
+            "id": 111111111,
+            "object_type": "root",
+            "relationships": {
+                "objects": [
+                    781513433
+                ],
+                "vectors": []
+            }
+        }
+    ]
+}

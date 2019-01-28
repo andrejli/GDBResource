@@ -5,6 +5,7 @@ import re
 import Encryption
 # import redis
 # import cmd
+import pytest
 from CONFIG import AUTOSAVE, EXT_DB
 
 KEY = [145, 194, 229, 232, 202, 213, 227, 147, 156, 198, 226, 227]
@@ -93,7 +94,7 @@ class GDBResource(object):
                 self.DBTree.remove(i)  # remove old root record
                 self.db_root_record()  # add new root record to database with actualized data
         # INCREMENTAL SAVE WITH NEW OBJECT ADDED
-        self.save_all_to_json()
+        self.save_all_to_json(file=self.filename)
         if EXT_DB == 'redis':
             # A D D   T O   R E D I S   D B
             self.redis_db.hset(id_code, 'object_type', object_type)
@@ -133,7 +134,7 @@ class GDBResource(object):
                 self.DBTree.remove(i)  # remove old root record
                 self.db_root_record()  # add new root record to database with actualized data
         # INCREMENTAL SAVE WITH NEW OBJECT ADDED
-        self.save_all_to_json()
+        self.save_all_to_json(file=self.filename)
         if EXT_DB == 'redis':
             # A D D   T O   R E D I S   D B
             self.redis_db.hset(id_code, 'object_type', 'link')
@@ -341,13 +342,7 @@ class GDBResource(object):
         finally:
             pass
 
-    # P Y T E S T   T E S T S
 
-    def test_fulltext(self):
-        assert self.fulltext_multiword_search('Analyza dokazala hovno!', 'Peter') is None
-        assert self.fulltext_multiword_search('Analyza dokazala hovno!', 'Analyza') == True
-        assert self.fulltext_multiword_search('Analyza dokazala hovno!', 'dokazala') == True
-        assert self.fulltext_multiword_search('Analyza dokazala hovno!', 'hovno') == True
 
     # A D V A N C E D   S E A R C H   W I T H   P E R I M E T E R  C A L C U L A T I O N S
 
@@ -502,7 +497,7 @@ class GDBResource(object):
         :return:
         """
         [self.DBTree.remove(i) for i in self.DBTree] # remove all records
-        self.save_all_to_json()  # save empty file
+        self.save_all_to_json(file=self.filename)  # save empty file
         cmd = 'rm ' + self.filename  # remove file from file system
         os.system(command=cmd)  # execute via os.system command  # TODO Use shutil module
         return
@@ -518,14 +513,13 @@ class GDBResource(object):
                 if i['id'] == 111111111:
                     self.DBTree.remove(i)
                     self.db_root_record()
-                    self.save_all_to_json()  # TODO !!!!!
+                    self.save_all_to_json(file=self.filename)  # TODO !!!!!
                     # self.db_root_record()
 
-    def save_all_to_json(self):
+    def save_all_to_json(self, file: str):
         """ Export all records in DBTree to specified file
                 :return: True if success
                 """
-        file = self.filename
         try:
             cmd = 'rm ' + file  # try to remove old saved file  # TODO Get Currently Working Directory
             os.system(command=cmd)  # execute system command via os.system
@@ -555,8 +549,10 @@ class GDBResource(object):
                 for i in range(0, len(converted_dbtree['DBTree'])):
                     self.DBTree.append(converted_dbtree['DBTree'][i])
         except FileNotFoundError:
-            self.init_new_database()
-            print('NEW DATABASE WAS INITIALIZED')
+            # self.init_new_database()
+            # print('NEW DATABASE WAS INITIALIZED')
+            print('DATABASE json file was not find')
+            return False
         finally:
             print('DONE')
             return True  # return
@@ -748,7 +744,6 @@ class GDBResource(object):
         # TODO recalculate all p1 from all_associated obj to be sure
         return all_associated_obj  # return all associated objects in db
 
-
     # V I E W S
 
     def view_all(self):
@@ -769,7 +764,6 @@ class GDBResource(object):
             if i['object_type'] != 'root':
                 result.add(i['object_type'])
         return result
-
 
     # C H E C K S
 
@@ -799,19 +793,63 @@ class GDBResource(object):
         if counter == 0:
             print('ROOT RECORD IS MISSING - NEW WILL BE CALCULATED')
             self.db_root_record()
-        if counter != 1:
+            return None
+        if 0 < counter > 1:
             for i in range(0, counter-1):
                 for k in self.DBTree:
                     if ['id'] == 111111111:
                         self.DBTree.remove(k)
+                        print('MORE ROOT RECORDS DETECTED')
+            return False
         if counter == 1:
-            self.save_all_to_json()
+            self.save_all_to_json(file=self.filename)
             return True
 
-    # P Y T E S T   T E S T S
+    def close(self):
+        pass
 
-    def test_id(self):
-        assert len(str(self.calculate_id())) == 9
+# P Y T E S T   T E S T S
+
+
+@pytest.fixture(scope='module')  # decorator of class with scope definition
+def obj():  # function to define class for all tests
+    print('------setup-fixture------------')  # marker to show execution of code
+    obj = GDBResource(filename='test_db.json')  # instance of class for testing purpose
+    yield obj  # yields instance to tests
+    print('------teardown-------------')  # marker to show execution of code
+    obj.close()  # colling closing function of instance
+
+
+def test_id(obj):
+    assert len(str(obj.calculate_id())) == 9
+
+
+def test_id_length(obj):
+    assert obj.check_id_len(id_code=123456) is False
+    assert obj.check_id_len(id_code=123456789) is True
+
+
+def test_fulltext(obj):
+    assert obj.fulltext_multiword_search('Analyza dokazala hovno!', 'Peter') is None
+    assert obj.fulltext_multiword_search('Analyza dokazala hovno!', 'Analyza') == True
+    assert obj.fulltext_multiword_search('Analyza dokazala hovno!', 'dokazala') == True
+    assert obj.fulltext_multiword_search('Analyza dokazala hovno!', 'hovno') == True
+
+
+def test_check_root(obj):
+    assert obj.check_root_record() is True
+
+
+def test_analyze_db_structure(obj):
+    assert obj.analyze_database_structure() == {'objects': [781513433], 'vectors': []}
+
+
+def test_load_from_json(obj):
+    assert obj.load_all_from_json() is True
+    # obj.filename = 'crap.json'
+    # assert obj.load_all_from_json() is False  # TODO Doesnt work
+
+# TODO Add more tests
 
 
 class DbEncryption(object):
