@@ -4,6 +4,7 @@ import cmd
 import os
 from CONFIG import EDITOR
 from Views import *
+from Fulltext_Digger import FulltextDigger
 
 
 class GdbResourceConsole(cmd.Cmd):
@@ -271,9 +272,7 @@ class GdbResourceConsole(cmd.Cmd):
         result = self.database.association(id1=id1, id2=id2)
         print(f'OBJECTS {id1} AND {id2} ARE LINKED :', result)
 
-
     # A D M I N   C O M M A N D S
-
     def do_init(self, args):
         """ Method initializes empty database in memory and save to defined .json file"""
         if len(self.parse_string(args)) != 1:
@@ -285,10 +284,31 @@ class GdbResourceConsole(cmd.Cmd):
         self.database.init_new_database()  # inits new database with empty root record
 
     def do_drop(self, args):
-        """ Method drops(remove) all records and links"""
+        """ Method drops(remove) all associated records,links and .data
+        files from database and cwd"""
         # TODO Require Admin Password
         self.database.drop_database()  # drop all records and links
-        # TODO Remove also data files !!!
+        print('REMOVE ONLY DATA FILES associated with DB.Tree')
+        for f in self.database.DBTree:
+            if len(f['data']) == 37:
+                cmd = 'rm ' + f['data']
+                print(cmd)
+                os.system(command=cmd)
+        return True
+
+    def do_drop_all(self, args):
+        """ Method drops(remove) all records,links and .data
+        files from cwd"""
+        # TODO Require Admin Password
+        self.database.drop_database()
+        index = FulltextDigger.catwalk()  # makes index of all data files in cwd
+        # self.database.drop_database()  # drop all records and links
+        print('REMOVE ALL DATA FILES IN DIRECTORY')
+        for f in range(0, len(index)):
+            cmd = 'rm ' + index.pop()
+            print(cmd)
+            os.system(command=cmd)
+        return True
 
     def do_switch(self, args):
         """
@@ -305,7 +325,7 @@ class GdbResourceConsole(cmd.Cmd):
         # TODO Sync primary db with db server (Redis)
 
     @staticmethod
-    def do_exit(self, parameters):
+    def do_exit(parameters):
         """
         Method exits database
         :param parameters: None

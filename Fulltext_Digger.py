@@ -44,8 +44,8 @@ class FulltextDigger(object):
             self.file_index = set()  # reset value passed already to final index dictionary
         return
 
-    @staticmethod
-    def catwalk():
+    @classmethod
+    def catwalk(cls):
         """
         Method walk tru all currently working directory (cwd) files finds all .data files
         with 32digits long name and pair with actual path to file.
