@@ -5,7 +5,7 @@ import re
 import Encryption
 # import redis
 # import cmd
-import pytest
+# import pytest
 from CONFIG import AUTOSAVE, EXT_DB
 
 KEY = [145, 194, 229, 232, 202, 213, 227, 147, 156, 198, 226, 227]

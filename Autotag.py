@@ -37,7 +37,8 @@ class Autotag(object):
         self.find_tags()  # find if exist already tags in
         self.find_pure_tags()  # extract existing tags
         for i in self.splited_string:  # loops splited strings
-            self.pure_splited_string.append(self.remove_end_symbols(i))   # transfer splited string to pure without end symbols
+            self.pure_splited_string.append(self.remove_end_symbols(i))   # transfer splited string
+            # to pure without end symbols
         result_part1 = self.calculate_single_word_hashes()  # add single word hashes
         self.combinations = self.calculate_all_relevant_combinations()  # make combinations of all
         # words starting with Capital or number
@@ -94,9 +95,9 @@ class Autotag(object):
         """
         x = word[-1]
         y = word[0:len(word)-1]
-        if word[-1] == '.' or word[-1] == '?' \
-                or word[-1] == '!' or word[-1] == '!':
-            word = word[0:len(word)-1]
+        if word[-1] == '.' or word[-1] == '?' or word[-1] == '!' or word[-1] == '!':
+            wo_last = len(word)-1
+            word = word[0:wo_last]
             # print(word)  # Control print to console
         return word
 

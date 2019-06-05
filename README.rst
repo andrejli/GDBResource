@@ -54,7 +54,7 @@ Predefined
 
 
 Admin Commands
-~~~~~~~~~~~~~~
+--------------
 * reveal all commands in database  >>>help
 * init new database  >>>init
 * drop database >>>drop
@@ -62,43 +62,43 @@ Admin Commands
 * exit program >>>exit
 
 List commands
-=============
+-------------
 * list all objects and links in database  >>>lsdb
 * list all object types >>>lsot
 
-Search Commands
-===============
+Search Commands:
+----------------
 * find id  >>> fid [id]
 * find text in data  >>> ft [text]
 * find object type >>> fot [object_type]
 * near objects ids >>> near [id]
 * reveal boolean if two objects are linked together >>> ql [id1] [id2]
 
-Edit Commands
-=============
+Edit Commands:
+--------------
 * new object record  >>>nr
 * new link between objects  >>>nl [id1] [id2]
 * edit id  >>> eid [id]
 * remove id  >>> rid [id]
 
-Selection Commands
-==================
+Selection Commands:
+-------------------
 Not added to CMD yet!
 
-Encryption Commands
-===================
+Encryption Commands:
+--------------------
 Not added to CMD yet!
 
-Views
-=====
+Views:
+------
 Standard view
 
-Export Commands
-===============
+Export Commands:
+----------------
 Not added to CMD yet!
 
-How to use SimpleEditor
-=======================
+How to use SimpleEditor:
+------------------------
 Simple editor is only used to edit NEW record. If you are editing existing id and
 external editor is defined it will be used instead SimpleEditor
 * To exit without write to .data file  >>>:q
@@ -120,6 +120,6 @@ Database Engine automatically index all records and if they are not linked engin
 Alias is a link between database object and all relevant records in database where it was mentioned.
 So you enter taged text and aliases with existing objects are provided by DB engine for you
 
-Visualize Data
-==============
+Visualize Data:
+---------------
 In near future we provide database with link to visualization library
