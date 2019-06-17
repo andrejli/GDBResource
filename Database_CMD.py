@@ -2,6 +2,7 @@ from DataStructure import *
 import SimpleEditor
 import cmd
 import os
+# import redis
 from CONFIG import EDITOR
 from Views import *
 from Fulltext_Digger import FulltextDigger
@@ -157,7 +158,7 @@ class GdbResourceConsole(cmd.Cmd):
                     reverse_boolean = False  # change value to False
                 self.database.db_link_record(id_code=id_code, object1_id=obj1, object2_id=obj2, data=data,
                                              reverse=reverse_boolean, confirmed=conf_boolean)  # write link to db
-                return True  # returns True
+                return True  # returns True  # TODO Bug Everytime when link is edited quits programm
 
     def do_rid(self, args):  # REMOVE ID
         """
