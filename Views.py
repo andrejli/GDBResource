@@ -40,6 +40,7 @@ def title_reader(filename: str):
         title = f.readline()  # reads first line in file (Header)
     return title
 
+# TODO Create function to view full record
 
 if __name__ == '__main__':
     obj = GDBResource(filename='db.json')
