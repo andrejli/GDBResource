@@ -151,6 +151,8 @@ class SimpleSubstitution(object):
         print(result_pwd, len(result_pwd))  # print final result password and his length
         return result_pwd  # return result list with N x passwords with same length as plaintext
 
+# P Y T E S T   T E S T
+
 
 if __name__ == '__main__':  # if this program runs as MAIN program DO:
     encrypted = EncryptionConverter(text='Hello World', password='Alabama')
