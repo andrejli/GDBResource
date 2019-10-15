@@ -50,7 +50,7 @@ class GdbResourceConsole(cmd.Cmd):
         """
         Method opens via os.system command external editor to edit data file
         :param filename: filename to edit
-        :return:
+        :retlurn:
         """
         open_cmd = EDITOR + ' ' + filename
         os.system(command=open_cmd)
@@ -211,6 +211,7 @@ class GdbResourceConsole(cmd.Cmd):
             print('No valid parameters given !!!\n ENTER STRING TO SEARCH')
             return
         # TODO Modify to accept multiword args
+        # TODO Automaticcaly find ID of records and append them to result
         result = self.database.find_text(text=self.parse_string(args)[0])  # finds text in data
         print(result)
 
@@ -309,7 +310,8 @@ class GdbResourceConsole(cmd.Cmd):
             cmd = 'rm ' + index.pop()
             print(cmd)
             os.system(command=cmd)
-        return True
+            # TODO Issue program terminates and exits Cmd
+        return
 
     def do_switch(self, args):
         """
