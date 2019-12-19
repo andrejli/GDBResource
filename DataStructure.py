@@ -36,9 +36,9 @@ class GDBResource(object):
         self.SALT = 'Nautilus'# is used with db_root_record to obtain BASE KEY
         self.KEY = [145, 194, 229, 232, 202, 213, 227, 147, 156, 198, 226, 227]  # TODO Write Method to obtain KEY from ... server ???
         self.DBTree = list()  # defines empty DBTree list
-        if EXT_DB == 'redis':
-            import redis
-            self.redis_db = redis.StrictRedis(host="localhost", port=6379, db=0)
+        if EXT_DB == 'redis':  # if external database is set to redis
+            import redis  # import redis python lib
+            self.redis_db = redis.StrictRedis(host="localhost", port=6379, db=0)  # initiate redis instance
         self.SELECTION = None  # selection of records is initiated as None
         self.load_all_from_json()
         self.check_root_record()
@@ -489,7 +489,7 @@ class GDBResource(object):
         self.DBTree = list()  # drop old and make empty function
         # make new empty root record
         self.db_root_record()
-        self.save_all_to_json()  # save it to instance db file
+        self.save_all_to_json(file=self.filename)  # save it to instance db file
         return  #
 
     def drop_database(self):

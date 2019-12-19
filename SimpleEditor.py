@@ -66,8 +66,12 @@ class ContainerEditor(object):
         Method performs render of editor screen i terminal
         :return:
         """
-        os.system(command='clear')  # system command to clear screen in Linux
+        
         # TODO Make Win and Darwin compatible
+        if os.name[:3] == 'Win':
+            os.system(command='cls')  # system command to clear screen in Linux
+        if os.name[:3] == 'Lin':
+            os.system(command='clear')  # system command to clear screen in Linux
         [print(i) for i in self.plaintext]  # comprehension in Python to print all rows from self.plaintext
         return  # return to main
 
