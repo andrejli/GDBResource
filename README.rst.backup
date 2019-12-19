@@ -1,4 +1,4 @@
-==================================
+==================================================
 G D B R  - GRAPH DATABASE RESOURCE
 ==================================
 
@@ -109,7 +109,7 @@ structure text without tables. GDBResource can search those tags.
 
 Examples:
 ---------
-<PERSON Name Surname DoB>
+'<PERSON Name Surname DoB>
 
 <PLACE Earth>
 

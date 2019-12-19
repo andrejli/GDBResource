@@ -1,6 +1,6 @@
 import re
 import os
-from DataStructure import *
+# from DataStructure import *
 
 
 class FulltextDigger(object):

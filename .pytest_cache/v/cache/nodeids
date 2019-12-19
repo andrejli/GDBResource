@@ -1,0 +1,8 @@
+[
+  "DataStructure.py::test_id",
+  "DataStructure.py::test_id_length",
+  "DataStructure.py::test_fulltext",
+  "DataStructure.py::test_check_root",
+  "DataStructure.py::test_analyze_db_structure",
+  "DataStructure.py::test_load_from_json"
+]

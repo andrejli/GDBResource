@@ -93,8 +93,7 @@ class Autotag(object):
         becaiuse they are irrelevant for hash calculations
         :return: word string
         """
-        x = word[-1]
-        y = word[0:len(word)-1]
+    
         if word[-1] == '.' or word[-1] == '?' or word[-1] == '!' or word[-1] == '!':
             wo_last = len(word)-1
             word = word[0:wo_last]

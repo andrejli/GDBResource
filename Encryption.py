@@ -31,7 +31,6 @@ class EncryptionConverter(object):
         result = list()  # define string value list as an empty list
         [result.append(ord(i)) for i in string]  # add integer representation of symbols to list
         print(result)  # print value list
-        value = 0
         return result
 
     def __repr__(self):
