@@ -256,7 +256,7 @@ class GdbResourceConsole(cmd.Cmd):
         result2 = self.database.not_far_objects(id_code=id_code)
         for i in result:
             result2.remove(i)
-        print(f'OBJECTS NOT FAR :{result2}')
+        print('OBJECTS NOT FAR', result2)
 
     def do_ql(self, parameters):  # ARE TWO OBJECTS LINKED ?
         """
