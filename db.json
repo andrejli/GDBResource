@@ -2,18 +2,6 @@
     "DBTree": [
         {
             "confirmed": true,
-            "data": "8363dda41e292a31d84dbed8819b8f6f.data",
-            "id": 700445555,
-            "object_type": "person"
-        },
-        {
-            "confirmed": true,
-            "data": "3d07f35e9ac850eca90dbe45e68acae2.data",
-            "id": 778800347,
-            "object_type": "place"
-        },
-        {
-            "confirmed": true,
             "data": "842ef6b8043b3af269a96af7c143ce70.data",
             "id": 330063023,
             "object_type": "place"
@@ -43,20 +31,50 @@
             "object_type": "vehicle"
         },
         {
+            "confirmed": true,
+            "data": "0aabfcd21d350b3fb22a030749497c27.data",
+            "id": 709087005,
+            "object_type": "report"
+        },
+        {
+            "confirmed": true,
+            "data": "8363dda41e292a31d84dbed8819b8f6f.data",
+            "id": 700445555,
+            "object_type": "person"
+        },
+        {
+            "confirmed": true,
+            "data": "vehicle was part of attack plan",
+            "id": 193063503,
+            "object_id1": 402686640,
+            "object_id2": 709087005,
+            "object_type": "link",
+            "reverse": true
+        },
+        {
+            "confirmed": true,
+            "data": "3d07f35e9ac850eca90dbe45e68acae2.data",
+            "id": 778800347,
+            "object_type": "place"
+        },
+        {
             "data": "[145, 194, 229, 232, 202, 213, 227, 147, 156, 198, 226, 227]",
             "id": 111111111,
             "object_type": "root",
             "relationships": {
                 "objects": [
-                    700445555,
-                    778800347,
                     330063023,
                     663576305,
                     347167895,
                     805545194,
-                    402686640
+                    402686640,
+                    709087005,
+                    700445555,
+                    778800347
                 ],
-                "vectors": []
+                "vectors": [
+                    193063503
+                ]
             }
         }
     ]
