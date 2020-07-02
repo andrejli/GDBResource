@@ -1,4 +1,4 @@
-import turtle
+"""import turtle
 
 # set turtle to draw graph
 DEFAULT_MARGIN = 50
@@ -58,4 +58,4 @@ input()
     # search objects position
     #draw line from to object
 
-# check protected zone
+# check protected zone"""

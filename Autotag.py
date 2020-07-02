@@ -260,7 +260,7 @@ def test_transform2words():
 
 def test_transform2sentence():
     obj = Autotag('Autotag_test.txt')
-    assert obj.transform_2_sentences(text='Hello World. Welcome to Jamaica.') == []
+    assert obj.transform_2_sentences(text='Hello World. Welcome to Jamaica.') == ["Hello World.","Welcome to Jamaica."]
 
 
 if __name__ == '__main__':

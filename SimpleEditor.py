@@ -28,11 +28,12 @@ class ContainerEditor(object):
         # M A I N   L O O P
         os.system('clear')
         print(self.editor_message)
-        input()
+        input("INPUT COMMAND")
         while self.flag is True:  # infinite loop
-            print(self.editor_message)
+            # print(self.editor_message)
             self.view_text()  # view given text in console
             self.input_row()  # input new row
+            os.system("clear")
         self.__repr__()
 
     def input_row(self):
