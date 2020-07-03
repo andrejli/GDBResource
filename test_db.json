@@ -7,6 +7,27 @@
             "object_type": "report"
         },
         {
+            "confirmed": true,
+            "data": "some.data",
+            "id": 983719925,
+            "object_type": "person"
+        },
+        {
+            "confirmed": true,
+            "data": "some.data",
+            "id": 288500192,
+            "object_type": "person"
+        },
+        {
+            "confirmed": true,
+            "data": "some_relation",
+            "id": 671155214,
+            "object_id1": 288500192,
+            "object_id2": 983719925,
+            "object_type": "link",
+            "reverse": true
+        },
+        {
             "data": "[145, 194, 229, 232, 202, 213, 227, 147, 156, 198, 226, 227]",
             "id": 111111111,
             "object_type": "root",

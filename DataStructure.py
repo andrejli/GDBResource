@@ -385,12 +385,13 @@ class GDBResource(object):
         if len(i2_p1_objects) == 0:
             result = False
             return result
-        for i in i1_all_associated_objects:
-            for k in i2_all_associated_objects:
-                if k == i:
-                    result = True
-                    return result
-        result = False
+        print(i1_all_associated_objects,"/t", i2_all_associated_objects)
+        result = i1_all_associated_objects.intersection(i2_all_associated_objects)
+        print(result)
+        if result != {}:
+            result = True
+        else:
+            result = False
         return result
 
     # S E L E C T  R E C O R D S
@@ -841,13 +842,17 @@ def test_check_root(obj):
 
 
 def test_analyze_db_structure(obj):
-    assert obj.analyze_database_structure() == {'objects': [781513433], 'vectors': []}
+    assert obj.analyze_database_structure() == {'objects': [781513433, 983719925, 288500192], 'vectors': [671155214]}
 
 
 def test_load_from_json(obj):
     assert obj.load_all_from_json() is True
     # obj.filename = 'crap.json'
     # assert obj.load_all_from_json() is False  # TODO Doesnt work
+
+def test_associate(obj):
+    assert obj.association(983719925, 288500192) == True
+    assert obj.association(983719925, 781513433) == False
 
 # TODO Add more tests
 
@@ -873,4 +878,3 @@ class DbEncryption(object):
 
 if __name__ == '__main__':
     db_obj = GDBResource(filename='db.json')
-

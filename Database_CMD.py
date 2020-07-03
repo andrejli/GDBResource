@@ -207,13 +207,17 @@ class GdbResourceConsole(cmd.Cmd):
         :param args:  text(string)  WITHOUT SPACE !!!
         :return:
         """
+        text2find = str()
         if len(self.parse_string(args)) != 1:
-            print('No valid parameters given !!!\n ENTER STRING TO SEARCH')
-            return
-        # TODO Modify to accept multiword args
+            for i in range(0, len(self.parse_string(args))):
+                text2find += self.parse_string(args)[i] + " "
+            text2find = text2find[:-1]  # Removes last added SPACE
+        else:
+            text2find = self.parse_string(args)[0]
         # TODO Automaticcaly find ID of records and append them to result
-        result = self.database.find_text(text=self.parse_string(args)[0])  # finds text in data
-        print(result)
+        result = self.database.find_text(text=text2find)  # finds text in data
+        print("RESULT OF FULTEXT SEARCH:\n",result)
+        return
 
     def do_fot(self, args):  # FIND OBJECT TYPE
         """Find object type
@@ -265,6 +269,7 @@ class GdbResourceConsole(cmd.Cmd):
         :param parameters: two id numbers from database
         :return:  logical True or False
         """
+        # TODO DOESN'T WORK
         if len(self.parse(parameters)) != 2:
             print('No valid parameters given !!!')
             return
@@ -336,6 +341,16 @@ class GdbResourceConsole(cmd.Cmd):
         """
         print('DONE')
         quit()
+
+    @staticmethod
+    def do_clear(parameters):
+        """
+        Clears teminal display
+        """
+        os.system(command="clear")
+        # TODO Do it also Win CLS
+        return
+
 
 
 if __name__ == '__main__':
