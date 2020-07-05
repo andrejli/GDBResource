@@ -854,6 +854,17 @@ def test_associate(obj):
     assert obj.association(983719925, 288500192) == True
     assert obj.association(983719925, 781513433) == False
 
+def test_perimeter1(obj):
+    assert obj.calculate_perimeter1(983719925) == [288500192]
+    assert obj.calculate_perimeter1(288500192) == [983719925]
+    assert obj.calculate_perimeter1(781513433) == []
+    assert obj.calculate_perimeter1(671155214) == []  # LINK CAN'T HAVE PERIMETER
+
+def test_perimeter2(obj):
+    assert obj.calculate_perimeter2(983719925) == [288500192]
+    assert obj.calculate_perimeter2(288500192) == [983719925]
+    assert obj.calculate_perimeter2(781513433) == []
+    assert obj.calculate_perimeter2(671155214) == []  # LINK CAN'T HAVE PERIMETER
 # TODO Add more tests
 
 

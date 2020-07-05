@@ -6,6 +6,7 @@ import os
 from CONFIG import EDITOR
 from Views import *
 from Fulltext_Digger import FulltextDigger
+from Encryption import *
 
 
 class GdbResourceConsole(cmd.Cmd):
@@ -269,7 +270,7 @@ class GdbResourceConsole(cmd.Cmd):
         :param parameters: two id numbers from database
         :return:  logical True or False
         """
-        # TODO DOESN'T WORK
+        # TODO DOESN'T WORK ??? TEST WAS SUCCESSFUL
         if len(self.parse(parameters)) != 2:
             print('No valid parameters given !!!')
             return
@@ -331,6 +332,18 @@ class GdbResourceConsole(cmd.Cmd):
         self.database = GDBResource(filename=db_file)  # loads file to db
 
         # TODO Sync primary db with db server (Redis)
+
+    def do_encrypt(self, args):
+        """
+        Encrypt all database files with Simple PWD
+        """
+        pwd = input("PASSWORD :")
+        files = FulltextDigger.catwalk()
+        # TODO FILE LOAD TO memory
+        # TODO FILE ENCRYPT WITH Password
+        # TODO FILE SAVE TO FILE
+        pass
+
 
     @staticmethod
     def do_exit(parameters):
