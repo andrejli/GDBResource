@@ -2,8 +2,10 @@ from DataStructure import *
 import SimpleEditor
 import cmd
 import os
-# import redis
-from CONFIG import EDITOR
+import sys
+from CONFIG import EDITOR, EXT_DB
+if EXT_DB == 'redis':
+    import redis
 from Views import *
 from Fulltext_Digger import FulltextDigger
 from Encryption import *
@@ -281,7 +283,7 @@ class GdbResourceConsole(cmd.Cmd):
         print(f'OBJECTS {id1} AND {id2} ARE LINKED :', result)
 
     # A D M I N   C O M M A N D S
-    def do_init(self, args):
+    def do_init(self, args):  # INIT NEW EMPTY DATABASE
         """ Method initializes empty database in memory and save to defined .json file"""
         if len(self.parse_string(args)) != 1:
             print('No valid .json file name !!!')
@@ -291,7 +293,7 @@ class GdbResourceConsole(cmd.Cmd):
             self.database.filename = self.parse_string(args)[0]  # changes database name to filename
         self.database.init_new_database()  # inits new database with empty root record
 
-    def do_drop(self, args):
+    def do_drop(self, args):  # DROP ???
         """ Method drops(remove) all associated records,links and .data
         files from database and cwd"""
         # TODO Require Admin Password
@@ -304,7 +306,7 @@ class GdbResourceConsole(cmd.Cmd):
                 os.system(command=cmd)
         return True
 
-    def do_drop_all(self, args):
+    def do_drop_all(self, args):  # DROP ALL DBTREE
         """ Method drops(remove) all records,links and .data
         files from cwd"""
         # TODO Require Admin Password
@@ -319,7 +321,7 @@ class GdbResourceConsole(cmd.Cmd):
             # TODO Issue program terminates and exits Cmd
         return
 
-    def do_switch(self, args):
+    def do_switch(self, args):  # SWITCH TO ANOTHER DBTREE
         """
         Switch to another database
         :param args: filename of existing database
@@ -333,7 +335,7 @@ class GdbResourceConsole(cmd.Cmd):
 
         # TODO Sync primary db with db server (Redis)
 
-    def do_encrypt(self, args):
+    def do_encrypt(self, args):  # ENCRYPT ALL DATA
         """
         Encrypt all database files with Simple PWD
         """
@@ -346,7 +348,7 @@ class GdbResourceConsole(cmd.Cmd):
 
 
     @staticmethod
-    def do_exit(parameters):
+    def do_exit(parameters):  # EXIT CMD CONSOLE
         """
         Method exits database
         :param parameters: None
@@ -356,12 +358,14 @@ class GdbResourceConsole(cmd.Cmd):
         quit()
 
     @staticmethod
-    def do_clear(parameters):
+    def do_clear(parameters):  # CLEAR TERMINAL DISPLAY
         """
         Clears teminal display
         """
-        os.system(command="clear")
-        # TODO Do it also Win CLS
+        if sys.platform == 'win32':
+            os.system(command='cls')
+        else:
+            os.system(command="clear")
         return
 
 

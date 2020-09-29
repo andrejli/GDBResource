@@ -8,10 +8,10 @@ import cmd
 import pytest
 from CONFIG import AUTOSAVE, EXT_DB
 
-KEY = [145, 194, 229, 232, 202, 213, 227, 147, 156, 198, 226, 227]
+KEY = [145, 194, 229, 232, 202, 213, 227, 147, 156, 198, 226, 227]  # VOID KEY
 
 
-class GDBResource(object):
+class GDBResource(object):  # MAIN OBJECT OF DATABASE
     """ Link based graph database to store data in memory and then commit to JSON file or redis.
         Database has objects:
             :: db_root_record - master base key for blockchain encryption mechanism
@@ -46,10 +46,10 @@ class GDBResource(object):
 
     # D A T A B A S E   O B J E C T S
 
-    def db_root_record(self):
+    def db_root_record(self):  # ROOT RECORD
         """
          Defines data structure of root record and stores it to DBTree
-        :return:
+        :return: None
         """
         for i in self.DBTree:  # loops thru DBTree
             if i['id'] == 111111111:  # if root is found DO:
@@ -69,6 +69,7 @@ class GDBResource(object):
         return
 
     def db_object_record(self, object_type: str, data: str, id_code=None, confirmed=False):
+        # THIS DATABASE CONTAINS OBJECTS AND LINKS BETWEEN THEM
         """
         Method defines data structure of record, adds record to DBTree
         and update root object
@@ -103,6 +104,7 @@ class GDBResource(object):
         return
 
     def db_link_record(self, object1_id: int, object2_id: int, reverse=False, data=None, id_code=None, confirmed=False):
+        # LINK OBJECT OF DATABASE
         """
         Method defines data structure of links between two objects, adds link to
         DBTree and update root object
@@ -147,7 +149,7 @@ class GDBResource(object):
 
     # S I M P L E   F I N D   M E T H O D S
 
-    def full_match_id_find(self, id_code, db=None):
+    def full_match_id_find(self, id_code, db=None): 
         """
         Finds fullmatch object with id for perimeter calculations and database internal needs
         :param id_code: id of object in integer form
@@ -216,7 +218,7 @@ class GDBResource(object):
             # print('NOT FOUND')
         return result  # returns result dict
 
-    def find_id_links(self, id_code: int, db=None):
+    def find_id_links(self, id_code: int, db=None):  # SEARCH FOR LINK IN DBTREE
         """
         Method finds all links with given id_code of record. This method purpose is
         to remove all links with removed id from database
@@ -239,7 +241,7 @@ class GDBResource(object):
                     result.append(i)  # append record to result dict
                     return result
 
-    def find_object_type(self, object_type: str, db=None):
+    def find_object_type(self, object_type: str, db=None):  # FINDS ALL OBJECT TYPES IN DBTREE
         """ method finds object type and list all to screen
         :param object_type: object type(person, link, collection, report)
         :param db: source to search if None - default DBTree
@@ -262,7 +264,7 @@ class GDBResource(object):
             # print('NOT FOUND')
         return result  # return result list
 
-    def find_text(self, text: str, db=None):
+    def find_text(self, text: str, db=None):  # FULLTEXT SEARCH 
         """
         Method searches text in string format in data values of all objects and links
         :param text: string value to search for
@@ -301,7 +303,7 @@ class GDBResource(object):
         return result  # return list of records
 
     @staticmethod
-    def fulltext_multiword_search(text, find):
+    def fulltext_multiword_search(text, find): # FULLTEXT MULTIWORD SEARCH
         """
         Function takes text, removes special characters and split into bag
         of words. Then splits multiword to search also to list. splits it
@@ -346,7 +348,7 @@ class GDBResource(object):
 
     # A D V A N C E D   S E A R C H   W I T H   P E R I M E T E R  C A L C U L A T I O N S
 
-    def near_objects(self, id_code: int):
+    def near_objects(self, id_code: int):  # FINDS NEAREST LINKED OBJECTS IN DATABASE
         """
         Method calculates nearest asscociated objects (not links)
         :param id_code: 9digit id code of record in database
@@ -355,7 +357,7 @@ class GDBResource(object):
         result = self.calculate_perimeter1(id_code=id_code)
         return result
 
-    def not_far_objects(self, id_code: int):
+    def not_far_objects(self, id_code: int):  # FINDS NEAREST + 1 OBJECTS 
         """
         Method calculates objects next to nearest(2links away)
         :param id_code: 9digit id code of record in database
@@ -364,7 +366,7 @@ class GDBResource(object):
         result = self.calculate_perimeter2(id_code=id_code)
         return result
 
-    def association(self, id1: int, id2: int):
+    def association(self, id1: int, id2: int):  # RETURNS BOOLEAN VALUE IF TWO OBJECTS ARE LINKED
         """
         Method compares perimeter calculation of id1 and id2 and returns boolean if objects are linked
         :param id1: 9digit id code of record in database
@@ -396,14 +398,14 @@ class GDBResource(object):
 
     # S E L E C T  R E C O R D S
 
-    def select_all(self):
+    def select_all(self):  # SELECT ALL RECORDS IN DBTREE
         """ Method to select all values from DBTree and insert it into SELECTION"""
         self.SELECTION = self.DBTree  # defines SELECTION as copy of db
         print('\nSELECTION FROM DATABASE :\n')  # prints to console
         [print(i) for i in self.SELECTION]  # list all SELECTION to console
         return self.SELECTION  # return SELECTION database
 
-    def add_id_to_selection(self, id_code: int):
+    def add_id_to_selection(self, id_code: int):  # ADD ID TO SELECTION
         """
         Method to select all values from DBTree and insert it into SELECTION
         :param id_code: (9digit integer)
@@ -418,7 +420,7 @@ class GDBResource(object):
         [print(i) for i in self.SELECTION]  # list all objects and links in selection
         return
 
-    def remove_id_from_selection(self, id_code: int):
+    def remove_id_from_selection(self, id_code: int):  # REMOVE ID FROM SELECTION
         """
         Method removes id from SELECTION
         :param id_code: 9digit integer
@@ -431,7 +433,7 @@ class GDBResource(object):
             print('\nSELECTION FROM DATABASE :\n')  # prints to console
             [print(i) for i in self.SELECTION]  # list all records and links from SELECTION
 
-    def drop_selection(self):
+    def drop_selection(self):  # REMOVE SELECTION
         """ Method to drop selection of records
         :return:
         """
@@ -483,7 +485,7 @@ class GDBResource(object):
 
     # A D M I N  P R O C E D U R E S
 
-    def init_new_database(self):
+    def init_new_database(self):  # INIT NEW DATABASE
         """ Method to initialize new database.
         :return:
         """
@@ -493,7 +495,7 @@ class GDBResource(object):
         self.save_all_to_json(file=self.filename)  # save it to instance db file
         return  #
 
-    def drop_database(self):
+    def drop_database(self):  # DROP DATABASE
         """ Method to drop all database
         :return:
         """
@@ -517,7 +519,7 @@ class GDBResource(object):
                     self.save_all_to_json(file=self.filename)  # TODO !!!!!
                     # self.db_root_record()
 
-    def save_all_to_json(self, file: str):
+    def save_all_to_json(self, file: str):  # SAVE ALL OBJECTS AND LINKS TO JSON FILE
         """ Export all records in DBTree to specified file
                 :return: True if success
                 """
@@ -536,7 +538,7 @@ class GDBResource(object):
                 print(f'SAVE RECORD TO JSON: {file}')  # print message
                 return True  # return
 
-    def load_all_from_json(self):
+    def load_all_from_json(self):  # LOADS ALL OBJECTS AND LINKS FROM DATABASE
         """ Method to import all records from specified file to DBTree instance
                         :return: True if success
                                  False if rejected
